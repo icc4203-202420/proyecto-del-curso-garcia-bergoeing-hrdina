@@ -1,15 +1,36 @@
 class API::V1::UsersController < ApplicationController
   respond_to :json
-  before_action :set_user, only: [:show, :update]  
+  before_action :set_user, only: [:show, :update, :friendships, :create_friendship]
+  before_action :verify_jwt_token, only: [:create, :update, :destroy]
   
+  # GET /users
   def index
     @users = User.includes(:reviews, :address).all   
   end
 
+  # GET /users/:id
   def show
-  
+    
   end
 
+  # GET /users/:id/friendship
+  def friendships
+    @friends = Friendship.find(params[:id])
+  end
+
+  # POST /users/:id/friendship
+  def create_friendship
+    friend = User.find(params[:friend_id])
+    @friendship = Friendship.new(user_id: @user.id, friend_id: friend.id, bar_id: params[:bar_id])
+
+    if @friendship.save
+      render json: { message: "Friendship created successfully." }, status: :created
+    else
+      render json: { errors: @friendship.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # POST /users
   def create
     @user = User.new(user_params)
     if @user.save
@@ -19,6 +40,7 @@ class API::V1::UsersController < ApplicationController
     end
   end
 
+    # PATCH/PUT /users/:id
   def update
     #byebug
     if @user.update(user_params)
@@ -42,4 +64,9 @@ class API::V1::UsersController < ApplicationController
               reviews_attributes: [:id, :text, :rating, :beer_id, :_destroy]
             })
   end
+
+  def verify_jwt_token
+    authenticate_user!
+    head :unauthorized unless current_user
+  end  
 end

@@ -23,8 +23,13 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :bars
       resources :beers
+      resources :events, only: [:show, :create, :update, :destroy]
       resources :users do
         resources :reviews, only: [:index]
+        member do
+          get 'friendships', to: 'users#friendships'
+          post 'friendships', to: 'users#create_friendship'
+        end
       end
       
       resources :reviews, only: [:index, :show, :create, :update, :destroy]
