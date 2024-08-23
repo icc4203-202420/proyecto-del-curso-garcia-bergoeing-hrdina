@@ -31,6 +31,10 @@ class API::V1::UsersController < ApplicationController
   end
 
   # POST /users
+  def show
+  
+  end
+
   def create
     @user = User.new(user_params)
     if @user.save

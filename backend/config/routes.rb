@@ -30,7 +30,6 @@ Rails.application.routes.draw do
           get 'friendships', to: 'users#friendships'
           post 'friendships', to: 'users#create_friendship'
         end
-      end
       
       resources :reviews, only: [:index, :show, :create, :update, :destroy]
     end
