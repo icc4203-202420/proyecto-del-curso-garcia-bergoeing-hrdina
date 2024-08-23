@@ -13,6 +13,8 @@ class API::V1::UsersController < ApplicationController
     
   end
 
+  #Added friendship funcions
+
   # GET /users/:id/friendship
   def friendships
     @friends = Friendship.find(params[:id])
@@ -29,6 +31,8 @@ class API::V1::UsersController < ApplicationController
       render json: { errors: @friendship.errors }, status: :unprocessable_entity
     end
   end
+
+  #Up to here
 
   # POST /users
   def show
@@ -69,6 +73,7 @@ class API::V1::UsersController < ApplicationController
             })
   end
 
+  # Also added verify token
   def verify_jwt_token
     authenticate_user!
     head :unauthorized unless current_user
