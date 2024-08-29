@@ -79,7 +79,7 @@ function App() {
         </Routes>
       </Container>
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-        <BottomNavigation value={value} onChange={handleChange} showLabels>
+        <BottomNavigation value={value} onChange={handleChange}>
             <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />}  component={Link} to="/" />
             <BottomNavigationAction label="Beers" value="beers"icon={<SportsBarIcon/>} component={Link} to="/beers" />
             <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
@@ -91,4 +91,3 @@ function App() {
 }
 
 export default App;
-
