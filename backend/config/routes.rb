@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  # devise_for :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-  get 'current_user', to: 'current_user#index'
   devise_for :users, path: '', path_names: {
     sign_in: 'api/v1/login',
     sign_out: 'api/v1/logout',
@@ -16,14 +13,13 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
-      resources :bars
+      resources :bars do
+        resources :events, only: [:index, :show] # Add events as a nested resource within bars
+      end
       resources :beers
-      resources :events, only: [:show, :create, :update, :destroy]
+      resources :events, only: [:create, :update, :destroy] # Non-nested events routes
       resources :users do
         resources :reviews, only: [:index]
         member do
@@ -34,5 +30,4 @@ Rails.application.routes.draw do
       resources :reviews, only: [:index, :show, :create, :update, :destroy]
     end
   end
-
 end

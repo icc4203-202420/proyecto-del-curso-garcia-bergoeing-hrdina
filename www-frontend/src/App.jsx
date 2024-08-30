@@ -10,10 +10,12 @@ import SearchIcon from '@mui/icons-material/Search';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
 import CampaignIcon from '@mui/icons-material/Campaign';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'; 
 import Home from './components/Home';
 import BeerList from './components/BeerList';
 import BarList from './components/BarList';
-import Events from './components/Events';
+import EventList from './components/EventList';
+import UserSearch from './components/UserSearch';
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -67,23 +69,37 @@ function App() {
             </ListItemIcon>
             <ListItemText primary="Beers" />
           </ListItem>
+          <ListItem button component={Link} to="/bars" onClick={toggleDrawer}>
+            <ListItemIcon>
+              <SportsBarIcon />
+            </ListItemIcon>
+            <ListItemText primary="Bars" />
+          </ListItem>
+          <ListItem button component={Link} to="/user-search" onClick={toggleDrawer}>
+            <ListItemIcon>
+              <AccountCircleIcon />
+            </ListItemIcon>
+            <ListItemText primary="User Search" />
+          </ListItem>
         </List>
       </Drawer>
 
-      <Container sx={{ mt: 10 }}> {/* Adjusted padding to avoid content being hidden */}
+      <Container sx={{ mt: 10 }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/beers" element={<BeerList />} />
           <Route path="/bars" element={<BarList />} />
-          <Route path="/events" element={<Events />} />
+          <Route path="/bars/:id/events" element={<EventList />} />
+          <Route path="/user-search" element={<UserSearch />} />
         </Routes>
       </Container>
+      
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
         <BottomNavigation value={value} onChange={handleChange}>
-            <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />}  component={Link} to="/" />
-            <BottomNavigationAction label="Beers" value="beers"icon={<SportsBarIcon/>} component={Link} to="/beers" />
-            <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
-            <BottomNavigationAction label="Events" value="events" icon={<CampaignIcon />} component={Link} to="/events" />
+          <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />}  component={Link} to="/" />
+          <BottomNavigationAction label="Beers" value="beers" icon={<SportsBarIcon/>} component={Link} to="/beers" />
+          <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
+          <BottomNavigationAction label="Events" value="events" icon={<CampaignIcon />} component={Link} to="/bars/:id/events" />
         </BottomNavigation>
       </Paper>
     </Router>

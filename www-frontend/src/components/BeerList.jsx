@@ -1,4 +1,3 @@
-// src/components/BeerList.jsx
 import React, { useState, useEffect } from 'react';
 import { Container, Grid, Card, CardContent, Typography, TextField, CardMedia } from '@mui/material';
 
@@ -25,6 +24,29 @@ const BeerList = () => {
         fullWidth
         margin="normal"
         onChange={(e) => setSearchTerm(e.target.value)}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: 'white', 
+            },
+            '&:hover fieldset': {
+              borderColor: 'white',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: 'blue',
+            },
+            '& input': {
+              color: 'white',
+            },
+          },
+          '& .MuiInputLabel-root': {
+            color: 'white',
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: 'white',
+          },
+          backgroundColor: '#333',
+        }}
       />
       <Grid container spacing={2}>
         {filteredBeers.map((beer) => (
@@ -52,5 +74,4 @@ const BeerList = () => {
 };
 
 export default BeerList;
-
 
