@@ -1,3 +1,4 @@
+# Events_controller created
 class API::V1::EventsController < ApplicationController
   include ImageProcessing
   include Authenticable
