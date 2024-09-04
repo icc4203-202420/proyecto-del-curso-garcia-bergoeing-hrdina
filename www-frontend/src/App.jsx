@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon,
   ListItemText, Container, BottomNavigation, BottomNavigationAction, Paper
@@ -11,11 +11,18 @@ import SportsBarIcon from '@mui/icons-material/SportsBar';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'; 
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import Home from './components/Home';
 import BeerList from './components/BeerList';
 import BarList from './components/BarList';
 import EventList from './components/EventList';
 import UserSearch from './components/UserSearch';
+import LoginForm from './components/Login';
+import RegistrationForm from './components/SignUp';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -24,9 +31,39 @@ function App() {
   };
 
   const [value, setValue] = React.useState('home');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+
+  /* ESTA SECCION ESTA CON UN ERROR ?????
+  const navigate = useNavigate();  // Initialize navigate here
+  const location = useLocation();  // Initialize location here
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    console.log('Token:', token);
+    console.log('IsAuthenticated:', isAuthenticated);
+    console.log('Current Path:', location.pathname);
+    if (!isAuthenticated && !['/login', '/signup'].includes(location.pathname) && !token) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, location.pathname, navigate]);
+  */
 
   const handleChange = (menu, newValue) => {
     setValue(newValue);
+  };
+
+  const handleLogin = (token) => {
+    localStorage.setItem('token', token);
+    setIsAuthenticated(true);
+    const decodedToken = jwtDecode(token);
+    setUsername(decodedToken.username);  // or handle, if that's what you're using
+  };
+  
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    setUsername('');
   };
 
   return (
@@ -57,6 +94,24 @@ function App() {
         }}
       >
         <List>
+        {!isAuthenticated ? (
+          <>
+          <ListItem button component={Link} to="/login" onClick={toggleDrawer}>
+            <ListItemIcon>
+              <LoginIcon />
+            </ListItemIcon>
+            <ListItemText primary="Iniciar Sesión" />
+          </ListItem>
+          
+          <ListItem button component={Link} to="/signup" onClick={toggleDrawer}>
+            <ListItemIcon>
+                <AppRegistrationIcon />
+              </ListItemIcon>
+              <ListItemText primary="Crear cuenta" />
+          </ListItem>
+          </>
+        ) : (
+          <>
           <ListItem button component={Link} to="/" onClick={toggleDrawer}>
             <ListItemIcon>
               <HomeIcon />
@@ -81,6 +136,13 @@ function App() {
             </ListItemIcon>
             <ListItemText primary="User Search" />
           </ListItem>
+          <ListItem button onClick={() => { handleLogout(); toggleDrawer(); }}>
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary="Cerrar Sesión" />
+        </ListItem>
+      </>)}
         </List>
       </Drawer>
 
@@ -91,17 +153,25 @@ function App() {
           <Route path="/bars" element={<BarList />} />
           <Route path="/bars/:id/events" element={<EventList />} />
           <Route path="/user-search" element={<UserSearch />} />
+          <Route path="/login" element={<LoginForm tokenHandler={handleLogin} />} />
+          <Route path="/signup" element={<RegistrationForm />} />
         </Routes>
       </Container>
-      
-      <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-        <BottomNavigation value={value} onChange={handleChange}>
-          <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />}  component={Link} to="/" />
-          <BottomNavigationAction label="Beers" value="beers" icon={<SportsBarIcon/>} component={Link} to="/beers" />
-          <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
-          <BottomNavigationAction label="Events" value="events" icon={<CampaignIcon />} component={Link} to="/bars/:id/events" />
-        </BottomNavigation>
-      </Paper>
+
+        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+        {!isAuthenticated ? ( 
+          <>
+            <BottomNavigation value={value} onChange={handleChange}>
+              <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />}  component={Link} to="/" />
+              <BottomNavigationAction label="Beers" value="beers" icon={<SportsBarIcon/>} component={Link} to="/beers" />
+              <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
+              <BottomNavigationAction label="Events" value="events" icon={<CampaignIcon />} component={Link} to="/bars/:id/events" />
+            </BottomNavigation>
+          </>
+         ):(
+         <>
+         </>)}
+        </Paper> 
     </Router>
   );
 }
