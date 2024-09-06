@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon,
-  ListItemText, Container, BottomNavigation, BottomNavigationAction, Paper
+  ListItemText, Container, BottomNavigation, BottomNavigationAction, Paper, Slider 
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -21,6 +21,8 @@ import EventList from './components/EventList';
 import UserSearch from './components/UserSearch';
 import LoginForm from './components/Login';
 import RegistrationForm from './components/SignUp';
+import BeerDetails from './components/BeerDetails';
+import ReviewForm from './components/ReviewForm';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
@@ -155,6 +157,8 @@ function App() {
           <Route path="/user-search" element={<UserSearch />} />
           <Route path="/login" element={<LoginForm tokenHandler={handleLogin} />} />
           <Route path="/signup" element={<RegistrationForm />} />
+          <Route path="/beers/:beerId/details" element={<BeerDetails />} />
+          <Route path="/beers/:beerId/review" element={<ReviewForm />} />
         </Routes>
       </Container>
 

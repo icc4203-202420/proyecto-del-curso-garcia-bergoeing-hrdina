@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Card, CardContent, Typography, TextField, CardMedia } from '@mui/material';
+import { Container, Grid, Card, CardContent, Typography, TextField, CardMedia, Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const BeerList = () => {
   const [beers, setBeers] = useState([]);
@@ -12,7 +13,7 @@ const BeerList = () => {
       .catch(error => console.error('Error fetching beers:', error));
   }, []);
 
-  const filteredBeers = beers.filter(beer => 
+  const filteredBeers = beers.filter(beer =>
     beer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -27,7 +28,7 @@ const BeerList = () => {
         sx={{
           '& .MuiOutlinedInput-root': {
             '& fieldset': {
-              borderColor: 'white', 
+              borderColor: 'white',
             },
             '&:hover fieldset': {
               borderColor: 'white',
@@ -64,6 +65,22 @@ const BeerList = () => {
                 <Typography variant="h5">{beer.name}</Typography>
                 <Typography variant="body2">ABV: {beer.alcohol}%</Typography>
                 <Typography variant="body2">IBU: {beer.ibu}</Typography>
+                <Button
+                  component={Link}
+                  to={`/beers/${beer.id}/details`}
+                  variant="contained"
+                  color="primary"
+                >
+                  View Details
+                </Button>
+                <Button
+                  component={Link}
+                  to={`/beers/${beer.id}/review`}
+                  variant="contained"
+                  color="secondary"
+                >
+                  Write Review
+                </Button>
               </CardContent>
             </Card>
           </Grid>
@@ -74,4 +91,3 @@ const BeerList = () => {
 };
 
 export default BeerList;
-
