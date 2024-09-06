@@ -96,6 +96,28 @@ const RegistrationForm = () => {
                   error={touched.name && Boolean(errors.name)}
                   helperText={touched.name && errors.name}
                   margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
                 />
               </Box>
               <Box sx={{ mt: 2 }}>
@@ -109,6 +131,28 @@ const RegistrationForm = () => {
                   error={touched.handle && Boolean(errors.handle)}
                   helperText={touched.handle && errors.handle}
                   margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
                 />
               </Box>
               <Box sx={{ mt: 2 }}>
@@ -122,6 +166,28 @@ const RegistrationForm = () => {
                   error={touched.email && Boolean(errors.email)}
                   helperText={touched.email && errors.email}
                   margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
                 />
               </Box>
               <Box sx={{ mt: 2 }}>
@@ -135,6 +201,28 @@ const RegistrationForm = () => {
                   error={touched.password && Boolean(errors.password)}
                   helperText={touched.password && errors.password}
                   margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
                 />
               </Box>
               <Box sx={{ mt: 2 }}>
@@ -148,6 +236,28 @@ const RegistrationForm = () => {
                   error={touched.repeatPassword && Boolean(errors.repeatPassword)}
                   helperText={touched.repeatPassword && errors.repeatPassword}
                   margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
                 />
               </Box>
               <Box sx={{ mt: 2 }}>
@@ -161,6 +271,28 @@ const RegistrationForm = () => {
                   error={touched.handle && Boolean(errors.handle)}
                   helperText={touched.handle && errors.handle}
                   margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
                 />
               </Box>
               <Box sx={{ mt: 2 }}>
@@ -174,6 +306,28 @@ const RegistrationForm = () => {
                   error={touched.handle && Boolean(errors.handle)}
                   helperText={touched.handle && errors.handle}
                   margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
                 />
               </Box>
               <Box sx={{ mt: 2 }}>
@@ -187,6 +341,28 @@ const RegistrationForm = () => {
                   error={touched.handle && Boolean(errors.handle)}
                   helperText={touched.handle && errors.handle}
                   margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
                 />
               </Box>
               <Box sx={{ mt: 3 }}>
