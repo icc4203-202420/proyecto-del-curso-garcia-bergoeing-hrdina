@@ -5,7 +5,7 @@ import { TextField, Button, Box, Container, Typography } from '@mui/material';
 import useAxios from 'axios-hooks';
 import axios from 'axios';
 import qs from 'qs';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Email no válido').required('El email es requerido'),
@@ -62,6 +62,10 @@ const LoginForm = ({ tokenHandler }) => {
           alignItems: 'center',
           width: '100%',
           mt: 8,
+          bgcolor: '#213547',
+          p: 4,
+          borderRadius: 2,
+          boxShadow: 3
         }}
       >
         <Typography component="h1" variant="h5">
@@ -153,6 +157,18 @@ const LoginForm = ({ tokenHandler }) => {
                   disabled={isSubmitting || loading}
                 >
                   {loading ? 'Enviando...' : 'Iniciar Sesión'}
+                </Button>
+              </Box>
+              <Box sx={{ mt: 3 }}>
+                <Button
+                  component={Link} 
+                  to="/signup"
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  disabled={isSubmitting || loading}
+                >
+                  Sign Up
                 </Button>
               </Box>
               {serverError && (

@@ -79,6 +79,7 @@ function App() {
     <>
       <AppBar position="fixed">
         <Toolbar>
+        {isAuthenticated ? (
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -88,6 +89,7 @@ function App() {
           >
             <MenuIcon />
           </IconButton>
+        ):(<></>)}
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             Beer App
           </Typography>
@@ -103,23 +105,7 @@ function App() {
         }}
       >
         <List>
-          {!isAuthenticated ? (
-            <>
-              <ListItem button component={Link} to="/login" onClick={toggleDrawer}>
-                <ListItemIcon>
-                  <LoginIcon />
-                </ListItemIcon>
-                <ListItemText primary="Iniciar Sesión" />
-              </ListItem>
-              
-              <ListItem button component={Link} to="/signup" onClick={toggleDrawer}>
-                <ListItemIcon>
-                    <AppRegistrationIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Crear cuenta" />
-              </ListItem>
-            </>
-          ) : (
+          {isAuthenticated ? (
             <>
               <ListItem button component={Link} to="/" onClick={toggleDrawer}>
                 <ListItemIcon>
@@ -151,7 +137,8 @@ function App() {
               </ListItemIcon>
               <ListItemText primary="Cerrar Sesión" />
             </ListItem>
-          </>)}
+            </>
+          ) : (<></>)}
         </List>
       </Drawer>
 

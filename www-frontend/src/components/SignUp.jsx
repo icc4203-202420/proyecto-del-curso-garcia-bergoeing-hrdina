@@ -5,10 +5,11 @@ import { TextField, Button, Box, Container, Typography } from '@mui/material';
 import useAxios from 'axios-hooks';
 import axios from 'axios';
 import qs from 'qs';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const validationSchema = Yup.object({
-  name: Yup.string().required('El nombre es requerido'),
+  first_name: Yup.string().required('El nombre es requerido'),
+  last_name: Yup.string().required('El apellido es requerido'),
   email: Yup.string().email('Email no válido').required('El email es requerido'),
   password: Yup.string().required('La contraseña es requerida').min(6, 'La contraseña debe tener al menos 6 caracteres'),
   password_confirmation: Yup.string()
@@ -17,15 +18,12 @@ const validationSchema = Yup.object({
 });
 
 const initialValues = {
-  name: '',
+  first_name: '',
+  last_name: '',
   handle: '',
   email: '',
   password: '',
-  password_confirmation: '',
-  address_line1: '', // Optional fields
-  address_line2: '',
-  city: '',
-  country: ''
+  password_confirmation: ''
 };
 
 
@@ -77,6 +75,10 @@ const RegistrationForm = () => {
           alignItems: 'center',
           width: '100%',
           mt: 8,
+          bgcolor: '#213547',
+          p: 4,
+          borderRadius: 2,
+          boxShadow: 3
         }}
       >
         <Typography component="h1" variant="h5">
@@ -96,10 +98,45 @@ const RegistrationForm = () => {
                   fullWidth
                   variant="outlined"
                   label="Nombre"
-                  name="name"
+                  name="first_name"
                   type="text"
-                  error={touched.name && Boolean(errors.name)}
-                  helperText={touched.name && errors.name}
+                  error={touched.first_name && Boolean(errors.first_name)}
+                  helperText={touched.first_name && errors.first_name}
+                  margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
+                />
+              </Box>
+              <Box sx={{ mt: 2 }}>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  variant="outlined"
+                  label="Apellido"
+                  name="last_name"
+                  type="text"
+                  error={touched.last_name && Boolean(errors.last_name)}
+                  helperText={touched.last_name && errors.last_name}
                   margin="normal"
                   sx={{
                     '& .MuiOutlinedInput-root': {
@@ -265,146 +302,7 @@ const RegistrationForm = () => {
                   }}
                 />
               </Box>
-              <Box sx={{ mt: 2 }}>
-                <Field
-                  as={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="Address Line 1"
-                  name="address_line1"
-                  type="text"
-                  error={touched.address_line1 && Boolean(errors.address_line1)}
-                  helperText={touched.address_line1 && errors.address_line1}
-                  margin="normal"
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: 'white',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'white',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'blue',
-                      },
-                      '& input': {
-                        color: 'white',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: 'white',
-                    },
-                    '& .MuiInputLabel-root.Mui-focused': {
-                      color: 'white',
-                    },
-                  }}
-                />
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                <Field
-                  as={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="Address Line 2"
-                  name="address_line2"
-                  type="text"
-                  error={touched.address_line2 && Boolean(errors.address_line2)}
-                  helperText={touched.address_line2 && errors.address_line2}
-                  margin="normal"
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: 'white',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'white',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'blue',
-                      },
-                      '& input': {
-                        color: 'white',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: 'white',
-                    },
-                    '& .MuiInputLabel-root.Mui-focused': {
-                      color: 'white',
-                    },
-                  }}
-                />
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                <Field
-                  as={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="City"
-                  name="city"
-                  type="text"
-                  error={touched.city && Boolean(errors.city)}
-                  helperText={touched.city && errors.city}
-                  margin="normal"
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: 'white',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'white',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'blue',
-                      },
-                      '& input': {
-                        color: 'white',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: 'white',
-                    },
-                    '& .MuiInputLabel-root.Mui-focused': {
-                      color: 'white',
-                    },
-                  }}
-                />
-              </Box>
-              <Box sx={{ mt: 2 }}>
-                <Field
-                  as={TextField}
-                  fullWidth
-                  variant="outlined"
-                  label="Country"
-                  name="country"
-                  type="text"
-                  error={touched.country && Boolean(errors.country)}
-                  helperText={touched.country && errors.country}
-                  margin="normal"
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: 'white',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: 'white',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: 'blue',
-                      },
-                      '& input': {
-                        color: 'white',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: 'white',
-                    },
-                    '& .MuiInputLabel-root.Mui-focused': {
-                      color: 'white',
-                    },
-                  }}
-                />
-              </Box>
+  
               <Box sx={{ mt: 3 }}>
                 <Button
                   type="submit"
@@ -414,6 +312,18 @@ const RegistrationForm = () => {
                   disabled={isSubmitting || loading}
                 >
                   {loading ? 'Enviando...' : 'Registrarse'}
+                </Button>
+              </Box>
+              <Box sx={{ mt: 3 }}>
+                <Button
+                  component={Link} 
+                  to="/login"
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  disabled={isSubmitting || loading}
+                >
+                  Return to Login
                 </Button>
               </Box>
               {serverError && (
