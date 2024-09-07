@@ -11,7 +11,7 @@ const validationSchema = Yup.object({
   name: Yup.string().required('El nombre es requerido'),
   email: Yup.string().email('Email no válido').required('El email es requerido'),
   password: Yup.string().required('La contraseña es requerida').min(6, 'La contraseña debe tener al menos 6 caracteres'),
-  repeatPassword: Yup.string()
+  password_confirmation: Yup.string()
     .oneOf([Yup.ref('password'), null], 'Las contraseñas no coinciden')
     .required('Repetir la contraseña es requerido'),
 });
@@ -21,7 +21,7 @@ const initialValues = {
   handle: '',
   email: '',
   password: '',
-  repeatPassword: '',
+  password_confirmation: '',
   address_line1: '', // Optional fields
   address_line2: '',
   city: '',
@@ -39,7 +39,7 @@ const RegistrationForm = () => {
   // Definir el hook para la petición POST
   const [{ data, loading, error }, executePost] = useAxios(
     {
-      url: '/signup',
+      url: 'http://localhost:3001/api/v1/signup',
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     },
@@ -48,9 +48,13 @@ const RegistrationForm = () => {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      const response = await executePost({ data: qs.stringify(values) });
-      setServerError(''); // Limpia el mensaje de error si el registro es exitoso
-      navigate('/login'); // Redirige a la ruta de login después de un registro exitoso
+      const response = await executePost({
+        data: qs.stringify({
+          user: values  // Nest the values under a user key
+        })
+      });
+      setServerError(''); // Clear error message if registration is successful
+      navigate('/login'); // Redirect to login after a successful registration
     } catch (err) {
       if (err.response && err.response.status === 409) {
         setServerError('Correo electrónico ya registrado.');
@@ -62,6 +66,7 @@ const RegistrationForm = () => {
       setSubmitting(false);
     }
   };
+  
 
   return (
     <Container maxWidth="sm">
@@ -231,10 +236,10 @@ const RegistrationForm = () => {
                   fullWidth
                   variant="outlined"
                   label="Repetir contraseña"
-                  name="repeatPassword"
+                  name="password_confirmation"
                   type="password"
-                  error={touched.repeatPassword && Boolean(errors.repeatPassword)}
-                  helperText={touched.repeatPassword && errors.repeatPassword}
+                  error={touched.password_confirmation && Boolean(errors.password_confirmation)}
+                  helperText={touched.password_confirmation && errors.password_confirmation}
                   margin="normal"
                   sx={{
                     '& .MuiOutlinedInput-root': {
@@ -268,8 +273,8 @@ const RegistrationForm = () => {
                   label="Address Line 1"
                   name="address_line1"
                   type="text"
-                  error={touched.handle && Boolean(errors.handle)}
-                  helperText={touched.handle && errors.handle}
+                  error={touched.address_line1 && Boolean(errors.address_line1)}
+                  helperText={touched.address_line1 && errors.address_line1}
                   margin="normal"
                   sx={{
                     '& .MuiOutlinedInput-root': {
@@ -303,8 +308,43 @@ const RegistrationForm = () => {
                   label="Address Line 2"
                   name="address_line2"
                   type="text"
-                  error={touched.handle && Boolean(errors.handle)}
-                  helperText={touched.handle && errors.handle}
+                  error={touched.address_line2 && Boolean(errors.address_line2)}
+                  helperText={touched.address_line2 && errors.address_line2}
+                  margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: 'blue',
+                      },
+                      '& input': {
+                        color: 'white',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: 'white',
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: 'white',
+                    },
+                  }}
+                />
+              </Box>
+              <Box sx={{ mt: 2 }}>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  variant="outlined"
+                  label="City"
+                  name="city"
+                  type="text"
+                  error={touched.city && Boolean(errors.city)}
+                  helperText={touched.city && errors.city}
                   margin="normal"
                   sx={{
                     '& .MuiOutlinedInput-root': {
@@ -338,8 +378,8 @@ const RegistrationForm = () => {
                   label="Country"
                   name="country"
                   type="text"
-                  error={touched.handle && Boolean(errors.handle)}
-                  helperText={touched.handle && errors.handle}
+                  error={touched.country && Boolean(errors.country)}
+                  helperText={touched.country && errors.country}
                   margin="normal"
                   sx={{
                     '& .MuiOutlinedInput-root': {

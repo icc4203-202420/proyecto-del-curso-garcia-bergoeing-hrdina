@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon,
-  ListItemText, Container, BottomNavigation, BottomNavigationAction, Paper, Slider 
+  ListItemText, Container, BottomNavigation, BottomNavigationAction, Paper 
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
@@ -23,43 +23,26 @@ import LoginForm from './components/Login';
 import RegistrationForm from './components/SignUp';
 import BeerDetails from './components/BeerDetails';
 import ReviewForm from './components/ReviewForm';
-import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
-  };
-
-  const [value, setValue] = React.useState('home');
+  const [value, setValue] = useState('home');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
 
-  /* ESTA SECCION ESTA CON UN ERROR ?????
   const navigate = useNavigate();  // Initialize navigate here
   const location = useLocation();  // Initialize location here
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    console.log('Token:', token);
-    console.log('IsAuthenticated:', isAuthenticated);
-    console.log('Current Path:', location.pathname);
-    if (!isAuthenticated && !['/login', '/signup'].includes(location.pathname) && !token) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, location.pathname, navigate]);
-  */
-
-  const handleChange = (menu, newValue) => {
-    setValue(newValue);
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
   };
 
   const handleLogin = (token) => {
     localStorage.setItem('token', token);
     setIsAuthenticated(true);
     const decodedToken = jwtDecode(token);
-    setUsername(decodedToken.username);  // or handle, if that's what you're using
+    setUsername(decodedToken.username);
   };
   
   const handleLogout = () => {
@@ -68,8 +51,32 @@ function App() {
     setUsername('');
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+      const decodedToken = jwtDecode(token);
+      setUsername(decodedToken.username);
+    }
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    console.log('Token:', token);
+    console.log('IsAuthenticated:', isAuthenticated);
+    console.log('Current Path:', location.pathname);
+
+    if (!isAuthenticated && !['/login', '/signup'].includes(location.pathname) && !token) {
+      navigate('/login');
+    }
+  }, [isAuthenticated]);
+
+  const handleChange = (menu, newValue) => {
+    setValue(newValue);
+  };
+
   return (
-    <Router>
+    <>
       <AppBar position="fixed">
         <Toolbar>
           <IconButton
@@ -96,55 +103,55 @@ function App() {
         }}
       >
         <List>
-        {!isAuthenticated ? (
-          <>
-          <ListItem button component={Link} to="/login" onClick={toggleDrawer}>
-            <ListItemIcon>
-              <LoginIcon />
-            </ListItemIcon>
-            <ListItemText primary="Iniciar Sesión" />
-          </ListItem>
-          
-          <ListItem button component={Link} to="/signup" onClick={toggleDrawer}>
-            <ListItemIcon>
-                <AppRegistrationIcon />
+          {!isAuthenticated ? (
+            <>
+              <ListItem button component={Link} to="/login" onClick={toggleDrawer}>
+                <ListItemIcon>
+                  <LoginIcon />
+                </ListItemIcon>
+                <ListItemText primary="Iniciar Sesión" />
+              </ListItem>
+              
+              <ListItem button component={Link} to="/signup" onClick={toggleDrawer}>
+                <ListItemIcon>
+                    <AppRegistrationIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Crear cuenta" />
+              </ListItem>
+            </>
+          ) : (
+            <>
+              <ListItem button component={Link} to="/" onClick={toggleDrawer}>
+                <ListItemIcon>
+                  <HomeIcon />
+                </ListItemIcon>
+                <ListItemText primary="Home" />
+              </ListItem>
+              <ListItem button component={Link} to="/beers" onClick={toggleDrawer}>
+                <ListItemIcon>
+                  <SearchIcon />
+                </ListItemIcon>
+                <ListItemText primary="Beers" />
+              </ListItem>
+              <ListItem button component={Link} to="/bars" onClick={toggleDrawer}>
+                <ListItemIcon>
+                  <SportsBarIcon />
+                </ListItemIcon>
+                <ListItemText primary="Bars" />
+              </ListItem>
+              <ListItem button component={Link} to="/user-search" onClick={toggleDrawer}>
+                <ListItemIcon>
+                  <AccountCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary="User Search" />
+              </ListItem>
+              <ListItem button onClick={() => { handleLogout(); toggleDrawer(); }}>
+              <ListItemIcon>
+                <LogoutIcon />
               </ListItemIcon>
-              <ListItemText primary="Crear cuenta" />
-          </ListItem>
-          </>
-        ) : (
-          <>
-          <ListItem button component={Link} to="/" onClick={toggleDrawer}>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText primary="Home" />
-          </ListItem>
-          <ListItem button component={Link} to="/beers" onClick={toggleDrawer}>
-            <ListItemIcon>
-              <SearchIcon />
-            </ListItemIcon>
-            <ListItemText primary="Beers" />
-          </ListItem>
-          <ListItem button component={Link} to="/bars" onClick={toggleDrawer}>
-            <ListItemIcon>
-              <SportsBarIcon />
-            </ListItemIcon>
-            <ListItemText primary="Bars" />
-          </ListItem>
-          <ListItem button component={Link} to="/user-search" onClick={toggleDrawer}>
-            <ListItemIcon>
-              <AccountCircleIcon />
-            </ListItemIcon>
-            <ListItemText primary="User Search" />
-          </ListItem>
-          <ListItem button onClick={() => { handleLogout(); toggleDrawer(); }}>
-          <ListItemIcon>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText primary="Cerrar Sesión" />
-        </ListItem>
-      </>)}
+              <ListItemText primary="Cerrar Sesión" />
+            </ListItem>
+          </>)}
         </List>
       </Drawer>
 
@@ -162,8 +169,8 @@ function App() {
         </Routes>
       </Container>
 
-        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-        {!isAuthenticated ? ( 
+      <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+        {isAuthenticated ? ( 
           <>
             <BottomNavigation value={value} onChange={handleChange}>
               <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />}  component={Link} to="/" />
@@ -172,11 +179,9 @@ function App() {
               <BottomNavigationAction label="Events" value="events" icon={<CampaignIcon />} component={Link} to="/bars/:id/events" />
             </BottomNavigation>
           </>
-         ):(
-         <>
-         </>)}
-        </Paper> 
-    </Router>
+         ):(<></>)}
+      </Paper>
+    </> 
   );
 }
 
