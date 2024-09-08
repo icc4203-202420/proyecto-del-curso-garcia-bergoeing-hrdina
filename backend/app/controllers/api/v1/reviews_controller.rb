@@ -1,6 +1,6 @@
 class API::V1::ReviewsController < ApplicationController
   respond_to :json
-  before_action :set_user, only: [:index, :create]
+  #before_action :set_user, only: [:index, :create]
   before_action :set_review, only: [:show, :update, :destroy]
 
   def index
@@ -17,7 +17,9 @@ class API::V1::ReviewsController < ApplicationController
   end
 
   def create
-    @review = @user.reviews.build(review_params)
+    puts review_params.merge(beer_id: params["beer_id"])
+    puts params
+    @review = Review.new(review_params.merge(beer_id: params["beer_id"]))
     if @review.save
       render json: @review, status: :created, location: api_v1_review_url(@review)
     else
@@ -44,12 +46,12 @@ class API::V1::ReviewsController < ApplicationController
     @review = Review.find_by(id: params[:id])
     render json: { error: "Review not found" }, status: :not_found unless @review
   end
-
-  def set_user
-    @user = User.find(params[:user_id]) 
-  end
+  
+  #def set_user
+  #  @user = User.find(params[:user_id]) 
+  #end
 
   def review_params
-    params.require(:review).permit(:id, :text, :rating, :beer_id)
+    params.require(:review).permit(:text, :rating, :beer_id, :user_id)
   end
 end

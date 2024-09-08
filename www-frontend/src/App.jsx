@@ -29,7 +29,6 @@ function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [value, setValue] = useState('home');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState('');
 
   const navigate = useNavigate();  // Initialize navigate here
   const location = useLocation();  // Initialize location here
@@ -42,7 +41,7 @@ function App() {
     localStorage.setItem('token', token);
     setIsAuthenticated(true);
     const decodedToken = jwtDecode(token);
-    setUsername(decodedToken.username);
+    localStorage.setItem('user_id', decodedToken.sub);
   };
   
   const handleLogout = () => {

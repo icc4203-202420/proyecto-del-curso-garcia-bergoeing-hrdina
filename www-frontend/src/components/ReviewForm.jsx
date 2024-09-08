@@ -15,6 +15,7 @@ const validationSchema = Yup.object({
 const initialValues = {
   text: '',
   rating: '',
+  user_id: 33,
 };
 
 // Configuración de axios con axios-hooks
@@ -30,11 +31,12 @@ const ReviewForm = () => {
   };
 
   // Definir el hook para la petición POST
+  const [user_id, setUser_id] = useState(localStorage.getItem("user_id"))
   const [{ data, loading, error }, executePost] = useAxios(
     {
       url: `http://localhost:3001/api/v1/beers/${beerId}/reviews`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     },
     { manual: true } // No ejecutar automáticamente, lo haremos manualmente al enviar el formulario
   );
@@ -155,6 +157,16 @@ const ReviewForm = () => {
                   }}
                 />
               </Box>
+              <Box sx={{ mt: 2 }}>
+                <Field
+                  as={TextField}
+                  label="Texto de la reseña"
+                  name="user_id"
+                  type="hidden"
+                  value={user_id}
+                />
+              </Box>
+
               <Box sx={{ mt: 3 }}>
                 <Button 
                   type="submit"
