@@ -13,9 +13,10 @@ const validationSchema = Yup.object({
 });
 
 const initialValues = {
-  email: '',
-  password: '',
+    email: '',
+    password: '',
 };
+
 
 // Configuración de axios con axios-hooks
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
@@ -35,8 +36,9 @@ const LoginForm = ({ tokenHandler }) => {
   );
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    console.log('Submitted values:', values); // Log the values to check the structure
     try {
-      const response = await executePost({ data: qs.stringify(values) });
+      const response = await executePost({ data: qs.stringify({user: values}) });
       const receivedToken = response.data.token;
       tokenHandler(receivedToken);
       setServerError(''); // Limpia el mensaje de error si el login es exitoso

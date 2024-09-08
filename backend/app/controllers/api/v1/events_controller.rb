@@ -4,7 +4,6 @@ class API::V1::EventsController < ApplicationController
 
   respond_to :json
   before_action :set_event, only: [:show, :update, :destroy]
-  before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   # GET /events
   def index
@@ -64,7 +63,7 @@ class API::V1::EventsController < ApplicationController
     params.require(:event).permit(  
       :name, :description, :date,
       :start_date, :end_date, :image_base64,
-      bar_attributes: [:name, :latitude, :longitude, address_attributes: [:user_id, :line1, :line2, :city, country_attributes: [:name]]])
+      :bar_id
   end
 
   def handle_image_attachment
@@ -73,9 +72,4 @@ class API::V1::EventsController < ApplicationController
       filename: decoded_image[:filename], 
       content_type: decoded_image[:content_type])
   end 
-  
-  def verify_jwt_token
-    authenticate_user!
-    head :unauthorized unless current_user
-  end  
 end

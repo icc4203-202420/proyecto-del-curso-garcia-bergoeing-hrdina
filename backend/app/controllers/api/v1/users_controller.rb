@@ -1,7 +1,7 @@
 class API::V1::UsersController < ApplicationController
   respond_to :json
   before_action :set_user, only: [:show, :update, :friendships, :create_friendship]
-  before_action :verify_jwt_token, only: [:create, :update, :destroy]
+  before_action :verify_jwt_token, only: [:create, :update, :friendships, :create_friendship]
   
   # GET /users
   def index
@@ -21,6 +21,11 @@ class API::V1::UsersController < ApplicationController
   # POST /users/:id/friendship
   def create_friendship
     friend = User.find(params[:friend_id])
+    if friend.nil?
+      render json: { errors: "Friend not found" }, status: :not_found
+      return
+    end
+
     @friendship = Friendship.new(user_id: @user.id, friend_id: friend.id, bar_id: params[:bar_id])
 
     if @friendship.save
