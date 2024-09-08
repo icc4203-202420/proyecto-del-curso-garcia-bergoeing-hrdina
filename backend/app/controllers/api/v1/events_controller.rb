@@ -8,7 +8,7 @@ class API::V1::EventsController < ApplicationController
   # GET /events
   def index
     @events = Event.all
-    render json: { events: @events }, status: :ok
+    render json: { events: @event }, status: :ok
   end
   
   # GET /events/:id
@@ -63,7 +63,7 @@ class API::V1::EventsController < ApplicationController
     params.require(:event).permit(  
       :name, :description, :date,
       :start_date, :end_date, :image_base64,
-      :bar_id
+      :bar_id)
   end
 
   def handle_image_attachment
@@ -71,5 +71,5 @@ class API::V1::EventsController < ApplicationController
     @event.image.attach(io: decoded_image[:io], 
       filename: decoded_image[:filename], 
       content_type: decoded_image[:content_type])
-  end 
+  end
 end
