@@ -51,15 +51,26 @@ function App() {
     setUsername('');
   };
 
+  // useEffect to check token validity on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      setIsAuthenticated(true);
-      const decodedToken = jwtDecode(token);
-      setUsername(decodedToken.username);
+      try {
+        const decodedToken = jwtDecode(token);
+        if (decodedToken.exp * 1000 < Date.now()) {
+          handleLogout(); // Log out if token is expired
+        } else {
+          setUsername(decodedToken.username);
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error('Invalid token:', error);
+        handleLogout(); // Log out if token is invalid
+      }
     }
   }, []);
 
+  // useEffect to redirect unauthenticated users
   useEffect(() => {
     const token = localStorage.getItem('token');
     console.log('Token:', token);
@@ -69,7 +80,7 @@ function App() {
     if (!isAuthenticated && !['/login', '/signup'].includes(location.pathname) && !token) {
       navigate('/login');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, location.pathname, navigate]);
 
   const handleChange = (menu, newValue) => {
     setValue(newValue);
@@ -79,17 +90,17 @@ function App() {
     <>
       <AppBar position="fixed">
         <Toolbar>
-        {isAuthenticated ? (
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={toggleDrawer}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-        ):(<></>)}
+          {isAuthenticated ? (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={toggleDrawer}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+          ) : null}
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             Beer App
           </Typography>
@@ -132,13 +143,13 @@ function App() {
                 <ListItemText primary="User Search" />
               </ListItem>
               <ListItem button onClick={() => { handleLogout(); toggleDrawer(); }}>
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary="Cerrar Sesión" />
-            </ListItem>
+                <ListItemIcon>
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText primary="Logout" />
+              </ListItem>
             </>
-          ) : (<></>)}
+          ) : null}
         </List>
       </Drawer>
 
@@ -158,18 +169,17 @@ function App() {
 
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
         {isAuthenticated ? ( 
-          <>
-            <BottomNavigation value={value} onChange={handleChange}>
-              <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />}  component={Link} to="/" />
-              <BottomNavigationAction label="Beers" value="beers" icon={<SportsBarIcon/>} component={Link} to="/beers" />
-              <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
-              <BottomNavigationAction label="Events" value="events" icon={<CampaignIcon />} component={Link} to="/bars/:id/events" />
-            </BottomNavigation>
-          </>
-         ):(<></>)}
+          <BottomNavigation value={value} onChange={handleChange}>
+            <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />} component={Link} to="/" />
+            <BottomNavigationAction label="Beers" value="beers" icon={<SportsBarIcon />} component={Link} to="/beers" />
+            <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
+            <BottomNavigationAction label="Events" value="events" icon={<CampaignIcon />} component={Link} to="/bars/:id/events" />
+          </BottomNavigation>
+        ) : null}
       </Paper>
-    </> 
+    </>
   );
 }
 
 export default App;
+

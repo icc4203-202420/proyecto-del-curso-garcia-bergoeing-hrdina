@@ -19,7 +19,7 @@ const ReviewForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`/api/v1/beers/${beerId}/reviews`, review);
+      await axios.post(`http://localhost:3001/api/v1/beers/${beerId}/reviews`, review);
       // Handle success (e.g., redirect or show success message)
     } catch (err) {
       setError('Error al enviar la reseña.');

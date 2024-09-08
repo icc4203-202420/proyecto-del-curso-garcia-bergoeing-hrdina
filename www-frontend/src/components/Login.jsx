@@ -17,7 +17,6 @@ const initialValues = {
     password: '',
 };
 
-
 // Configuración de axios con axios-hooks
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -38,12 +37,20 @@ const LoginForm = ({ tokenHandler }) => {
   const handleSubmit = async (values, { setSubmitting }) => {
     console.log('Submitted values:', values); // Log the values to check the structure
     try {
-      const response = await executePost({ data: qs.stringify({user: values}) });
-      const receivedToken = response.data.token;
-      tokenHandler(receivedToken);
-      setServerError(''); // Limpia el mensaje de error si el login es exitoso
-      navigate('/'); // Redirige a la ruta raíz después de un login exitoso
+      const response = await executePost({ data: qs.stringify({ user: values }) });
+
+      // Extract the token from the headers
+      const receivedToken = response.headers.authorization.split(' ')[1];
+  
+      if (receivedToken) {
+        tokenHandler(receivedToken);
+        setServerError(''); // Clear the error message if login is successful
+        navigate('/'); // Redirect to the root route after a successful login
+      } else {
+        setServerError('No token received. Please try again.');
+      }
     } catch (err) {
+      console.log("Error: ", err);
       if (err.response && err.response.status === 401) {
         setServerError('Correo electrónico o contraseña incorrectos.');
       } else {
@@ -54,7 +61,7 @@ const LoginForm = ({ tokenHandler }) => {
       setSubmitting(false);
     }
   };
-
+  
   return (
     <Container maxWidth="sm">
       <Box
