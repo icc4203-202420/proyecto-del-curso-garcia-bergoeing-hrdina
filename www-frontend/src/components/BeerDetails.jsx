@@ -8,43 +8,25 @@ const BeerDetails = () => {
   const [beer, setBeer] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loadingBeer, setLoadingBeer] = useState(true);
-  const [loadingReviews, setLoadingReviews] = useState(true);
   const [beerError, setBeerError] = useState('');
-  const [reviewsError, setReviewsError] = useState('');
-  const [page, setPage] = useState(1); // Estado para la página actual
-  const [reviewsPerPage] = useState(5); // Número de reseñas por página
+  const [page, setPage] = useState(1);
+  const [reviewsPerPage] = useState(5);
   const navigate = useNavigate();
 
-  // Fetch para obtener detalles de la cerveza
   useEffect(() => {
     const fetchBeer = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/api/v1/beers/${beerId}`);
         setBeer(response.data.beer);
+        setReviews(response.data.beer.reviews || []);
         setLoadingBeer(false);
       } catch (err) {
-        setBeerError('Error fetching beer details.');
+        setBeerError('Error al cargar los detalles de la cerveza.');
         setLoadingBeer(false);
       }
     };
 
     fetchBeer();
-  }, [beerId]);
-
-  // Fetch para obtener reseñas de la cerveza
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/api/v1/beers/${beerId}/reviews`);
-        setReviews(response.data.reviews); // Asumiendo que la API devuelve un array de reseñas
-        setLoadingReviews(false);
-      } catch (err) {
-        setReviewsError('Error fetching reviews.');
-        setLoadingReviews(false);
-      }
-    };
-
-    fetchReviews();
   }, [beerId]);
 
   const handleReviewClick = () => {
@@ -54,10 +36,10 @@ const BeerDetails = () => {
   // Calcular el índice de inicio y fin para las reseñas actuales
   const indexOfLastReview = page * reviewsPerPage;
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
-  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview); // Reseñas actuales de la página
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
 
   const handlePageChange = (event, value) => {
-    setPage(value); // Actualizar el estado de la página
+    setPage(value);
   };
 
   return (
@@ -88,21 +70,19 @@ const BeerDetails = () => {
             <Typography variant="body2">BLG: {beer.blg || 'N/A'}</Typography>
             <Typography variant="body2">Average Rating: {beer.avg_rating || 'N/A'}</Typography>
             <Button variant="contained" color="primary" onClick={handleReviewClick}>
-              Leave a Review
+              Escribir una Reseña
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <Typography>No beer details found</Typography>
+        <Typography>No se encontraron detalles de la cerveza</Typography>
       )}
 
       {/* Mostrar reseñas */}
       <Box sx={{ mt: 4 }}>
         <Typography variant="h6">Reseñas</Typography>
-        {loadingReviews ? (
+        {loadingBeer ? (
           <CircularProgress />
-        ) : reviewsError ? (
-          <Typography color="error">{reviewsError}</Typography>
         ) : reviews.length > 0 ? (
           <Box>
             {currentReviews.map((review) => (
@@ -110,13 +90,14 @@ const BeerDetails = () => {
                 <CardContent>
                   <Typography variant="body1">{review.text}</Typography>
                   <Typography variant="body2">Rating: {review.rating}</Typography>
+                  <Typography variant="body2">By: {review.user.handle}</Typography> {/* Mostrar el handle del usuario */}
                 </CardContent>
               </Card>
             ))}
             {/* Componente de paginación separado */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
               <Pagination
-                count={Math.ceil(reviews.length / reviewsPerPage)} // Calcular el número total de páginas
+                count={Math.ceil(reviews.length / reviewsPerPage)}
                 page={page}
                 onChange={handlePageChange}
                 color="primary"
@@ -124,7 +105,7 @@ const BeerDetails = () => {
             </Box>
           </Box>
         ) : (
-          <Typography>No reviews available for this beer</Typography>
+          <Typography>No hay reseñas disponibles para esta cerveza</Typography>
         )}
       </Box>
     </Container>

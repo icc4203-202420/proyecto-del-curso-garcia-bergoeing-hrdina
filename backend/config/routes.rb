@@ -19,7 +19,7 @@ Rails.application.routes.draw do
         resources :events, only: [:index, :show] # Add events as a nested resource within bars
       end
       resources :beers do
-        resources :reviews, only: [:create]
+        resources :reviews, only: [:index, :create]
       end
       resources :events, only: [:create, :update, :destroy] # Non-nested events routes
       resources :users do
