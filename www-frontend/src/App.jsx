@@ -47,7 +47,6 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
-    setUsername('');
   };
 
   // useEffect to check token validity on mount

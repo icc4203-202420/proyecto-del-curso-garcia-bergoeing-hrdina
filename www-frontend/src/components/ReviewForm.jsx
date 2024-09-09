@@ -6,59 +6,46 @@ import { useParams } from 'react-router-dom';
 import useAxios from 'axios-hooks';
 import axios from 'axios';
 import qs from 'qs';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const validationSchema = Yup.object({
-  text: Yup.string().required('Requiere de justificación para poder dejar un review').min(16, 'El review debe tener al menos mas de 15 caracteres')
-})
-
-const initialValues = {
-  text: '',
-  rating: '',
-  user_id: 33,
-};
-
-// Configuración de axios con axios-hooks
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+  text: Yup.string()
+    .required('Requiere de justificación para poder dejar un review')
+    .min(16, 'El review debe tener al menos mas de 15 caracteres'),
+  rating: Yup.number().required('Debe seleccionar una calificación')
+});
 
 const ReviewForm = () => {
   const { beerId } = useParams();
   const [serverError, setServerError] = useState(''); // Estado para manejar el error del servidor
   const navigate = useNavigate(); // Hook para manejar la navegación
+  const [rating, setRating] = useState(0);
 
-  const handleSliderChange = (event, newValue) => {
-    setReview({ ...review, rating: newValue });
-  };
+  // Retrieve user_id from localStorage
+  const userId = localStorage.getItem("user_id");
 
-  // Definir el hook para la petición POST
-  const [user_id, setUser_id] = useState(localStorage.getItem("user_id"))
   const [{ data, loading, error }, executePost] = useAxios(
     {
       url: `http://localhost:3001/api/v1/beers/${beerId}/reviews`,
       method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+      headers: { 
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }
     },
-    { manual: true } // No ejecutar automáticamente, lo haremos manualmente al enviar el formulario
+    { manual: true }
   );
-  
+
   const handleSubmit = async (values, { setSubmitting }) => {
+    values.user_id = userId;
+    values.rating = rating;
     console.log('Submitted values:', values); // Log the values to check the structure
     try {
       const response = await executePost({ data: qs.stringify({ review: values }) });
 
-      // Log the full response to see the structure
       console.log('Data in Response:', response.data);
-  
-      // Extract the token from the headers
-      const receivedToken = response.headers.authorization.split(' ')[1];
-    
-      if (receivedToken) {
-        tokenHandler(receivedToken);
-        setServerError(''); // Clear the error message if login is successful
-        navigate('/'); // Redirect to the root route after a successful login
-      } else {
-        setServerError('No token received. Please try again.');
-      }
+      setServerError(''); // Clear the error message if submission is successful
+      navigate('/'); // Redirect to the root route after a successful submission
     } catch (err) {
       console.log("Error: ", err);
       if (err.response && err.response.status === 401) {
@@ -88,11 +75,11 @@ const ReviewForm = () => {
         }}>
         <Typography variant="h4">Escribir una Reseña</Typography>
         <Formik
-          initialValues={initialValues}
+          initialValues={{ text: '', rating: 0, user_id: '' }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting, errors, touched }) => (
+          {({ isSubmitting, errors, touched, setFieldValue }) => (
             <Form style={{ width: '100%' }}>
               <Box sx={{ mt: 2 }}>
                 <Field
@@ -135,14 +122,12 @@ const ReviewForm = () => {
                 <Typography variant="body1" sx={{ color: 'white' }}>Calificación</Typography>
                 <Slider
                   name="rating"
-                  type="int"
+                  value={rating}
                   min={1}
                   max={5}
                   step={1}
                   marks
-                  error={touched.rating && Boolean(errors.rating)}
-                  helperText={touched.rating && errors.rating}
-                  onChange={handleSliderChange}
+                  onChange={(event, newValue) => setRating(newValue)}
                   sx={{
                     color: 'purple',
                     '& .MuiSlider-thumb': {
@@ -157,15 +142,7 @@ const ReviewForm = () => {
                   }}
                 />
               </Box>
-              <Box sx={{ mt: 2 }}>
-                <Field
-                  as={TextField}
-                  label="Texto de la reseña"
-                  name="user_id"
-                  type="hidden"
-                  value={user_id}
-                />
-              </Box>
+              <Field name="user_id" type="hidden" value={userId} />
 
               <Box sx={{ mt: 3 }}>
                 <Button 
@@ -174,7 +151,7 @@ const ReviewForm = () => {
                   variant="contained" 
                   color="primary"
                   disabled={isSubmitting || loading}
-                  >
+                >
                   {loading ? 'Enviando...' : 'Enviar Reseña'}
                 </Button>
               </Box>
