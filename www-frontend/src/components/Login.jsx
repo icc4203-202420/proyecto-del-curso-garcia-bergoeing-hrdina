@@ -45,7 +45,7 @@ const LoginForm = ({ tokenHandler }) => {
       if (receivedToken) {
         tokenHandler(receivedToken);
         setServerError(''); // Clear the error message if login is successful
-        navigate('/'); // Redirect to the root route after a successful login
+        navigate('/map'); // Redirect to the root route after a successful login
       } else {
         setServerError('No token received. Please try again.');
       }

@@ -15,6 +15,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import Home from './components/Home';
+import Map from './components/Map';
 import BeerList from './components/BeerList';
 import BarList from './components/BarList';
 import EventList from './components/EventList';
@@ -46,6 +47,7 @@ function App() {
   
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user_id');
     setIsAuthenticated(false);
   };
 
@@ -116,7 +118,7 @@ function App() {
         <List>
           {isAuthenticated ? (
             <>
-              <ListItem button component={Link} to="/" onClick={toggleDrawer}>
+              <ListItem button component={Link} to="/map" onClick={toggleDrawer}>
                 <ListItemIcon>
                   <HomeIcon />
                 </ListItemIcon>
@@ -154,6 +156,7 @@ function App() {
       <Container sx={{ mt: 10 }}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/map" element={<Map />} />
           <Route path="/beers" element={<BeerList />} />
           <Route path="/bars" element={<BarList />} />
           <Route path="/bars/:id/events" element={<EventList />} />
@@ -168,7 +171,7 @@ function App() {
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
         {isAuthenticated ? ( 
           <BottomNavigation value={value} onChange={handleChange}>
-            <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />} component={Link} to="/" />
+            <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />} component={Link} to="/map" />
             <BottomNavigationAction label="Beers" value="beers" icon={<SportsBarIcon />} component={Link} to="/beers" />
             <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
             <BottomNavigationAction label="Events" value="events" icon={<CampaignIcon />} component={Link} to="/bars/:id/events" />
