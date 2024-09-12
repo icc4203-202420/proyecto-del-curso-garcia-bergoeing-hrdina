@@ -64,7 +64,11 @@ function App() {
           setIsAuthenticated(true);
         }
       } catch (error) {
-        console.error('Invalid token:', error);
+        if (error instanceof DOMException) {
+          console.error('DOMException occurred while decoding the token:', error.message);
+        } else {
+          console.error('Invalid token:', error);
+        }
         handleLogout(); // Log out if token is invalid
       }
     }
