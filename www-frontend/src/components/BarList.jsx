@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Card, CardContent, Typography, TextField, CardMedia } from '@mui/material';
+import { Container, Grid, Card, CardContent, Typography, TextField, CardMedia, Button } from '@mui/material';
+import { Link } from 'react-router-dom'; // Import Link for routing
 
 const BarList = () => {
   const [bars, setBars] = useState([]);
@@ -64,10 +65,20 @@ const BarList = () => {
                 <Typography variant="h5">{bar.name}</Typography>
                 <Typography variant="body2">Latitude: {bar.latitude}</Typography>
                 <Typography variant="body2">Longitude: {bar.longitude}</Typography>
-                {/* Assuming address details are included in the bar object */}
                 {bar.address && (
-                  <Typography variant="body2">Address: {bar.address.line1}, {bar.address.city}</Typography>
+                  <Typography variant="body2">
+                    Address: {bar.address.line1}, {bar.address.city}
+                  </Typography>
                 )}
+                {/* Add Button to navigate to events view */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component={Link}
+                  to={`/bars/${bar.id}/events`} // Link to the events view
+                >
+                  View Events
+                </Button>
               </CardContent>
             </Card>
           </Grid>
