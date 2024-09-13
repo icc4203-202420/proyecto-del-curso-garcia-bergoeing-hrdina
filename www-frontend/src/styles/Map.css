@@ -24,7 +24,24 @@
   transform: translateX(-50%); /* Center horizontally */
   z-index: 1;
   padding: 10px;
-  background: white;
+  color: black;
+  background-color: white;
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+/* Hover effect for the input field */
+.search-bar input:hover {
+  border-color: #007bff; /* Change border color on hover */
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3); /* Add subtle shadow effect */
+}
+
+/* Focus effect when the input is clicked */
+.search-bar input:focus {
+  border-color: #007bff; /* Border color on focus */
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5); /* Slightly stronger shadow on focus */
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0; /* Change background color on hover */
+  color: #007bff; /* Optionally change text color on hover */
 }

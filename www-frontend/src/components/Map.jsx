@@ -1,94 +1,141 @@
 import { Box } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
-import { PinElement } from '@vis.gl/react-google-maps';
 import { useLoadGMapsLibraries } from '../hooks/useLoadGMapsLibraries';
 import { MAPS_LIBRARY, MARKER_LIBRARY } from '../constants';
 import '../styles/Map.css'
 
 const Map = () => {
-   const libraries = useLoadGMapsLibraries();
-   const markerCluster = useRef();
-   const mapNodeRef = useRef();
-   const mapRef = useRef();
-   const [bars, setBars] = useState([]);
-   const inputRef = useRef()
-
-   useEffect(() => {
-      const fetchBars = async () => {
-        const url = 'http://localhost:3001/api/v1/bars';
-        try {
-          const response = await fetch(url);
-          const dataPaired = await response.json();
-          console.log('Data from API:', dataPaired); // Log the data to check its structure
-          setBars(dataPaired.bars); // Access the bars array from the API response
-        } catch (error) {
-          console.error('Error fetching bars:', error);
-        }
-      };
-      fetchBars();
-    }, []);
-
-   // Log when bars state is updated
-   useEffect(() => {
-      console.log('Updated bars:', bars); // This will log when bars is updated
-   }, [bars]);
-
-   useEffect(() => {
-      if (!libraries) {
-        return;
-      }
+  const libraries = useLoadGMapsLibraries();
+  const markerCluster = useRef();
+  const mapNodeRef = useRef();
+  const mapRef = useRef();
+  const [bars, setBars] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(''); // State for search term
+  const [showSuggestions, setShowSuggestions] = useState(false); // To toggle suggestions visibility
+  const inputRef = useRef();
   
-      const { Map } = libraries[MAPS_LIBRARY];
-      mapRef.current = new Map(mapNodeRef.current, {
-         mapId: 'DEMO_MAP_ID',
-         center: { lat: 0, lng: 0 }, //Placeholder
-         isFractionalZoomEnabled: false,
-         maxZoom: 15,
-         minZoom: 3,
-         streetViewControl: false,
-         zoom: 10,
-      });
+  const markersRef = useRef([]);
 
-      // Use try-catch for DOMException handling
+  useEffect(() => {
+    const fetchBars = async () => {
+      const url = 'http://localhost:3001/api/v1/bars';
       try {
-         navigator.geolocation.getCurrentPosition((position) => {
-            const { latitude, longitude } = position.coords;
-            const userCoords = { lat: latitude, lng: longitude };
-            const marker = new Marker({ position: userCoords });
-            marker.setMap(mapRef.current);
-            mapRef.current.panTo(userCoords);
-         }, (error) => {
-            console.error('Error retrieving geolocation:', error);
-         });
+        const response = await fetch(url);
+        const dataPaired = await response.json();
+        setBars(dataPaired.bars);
       } catch (error) {
-         if (error instanceof DOMException) {
-            console.error('DOMException occurred:', error.message);
-         } else {
-            console.error('An error occurred:', error);
-         }
+        console.error('Error fetching bars:', error);
       }
+    };
+    fetchBars();
+  }, []);
 
-      const { AdvancedMarkerElement: Marker } = libraries[MARKER_LIBRARY];
-      const markers = bars.map(({name, latitude, longitude}) => {
-         const pin = PinElement()
-         pin.glyph = name
-         pin.background = "#00ff00"
-         const position = (latitude, longitude)
-         const marker = new Marker({ position, content: pin.element });
-         return marker
+  // Handle Search: when user types in the search box
+  const handleSearch = (event) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    setShowSuggestions(true); // Show suggestions when the user types
+  };
+
+  // Zoom in and pan to a specific bar
+  const zoomToBar = (bar) => {
+    if (mapRef.current) {
+      const position = { lat: bar.latitude, lng: bar.longitude };
+      mapRef.current.setZoom(15);
+      mapRef.current.panTo(position);
+    }
+    setShowSuggestions(false); // Hide suggestions once a bar is selected
+    setSearchTerm(bar.name); // Update search bar with selected bar name
+  };
+
+  useEffect(() => {
+    if (!libraries) {
+      return;
+    }
+
+    const { Map } = libraries[MAPS_LIBRARY];
+    mapRef.current = new Map(mapNodeRef.current, {
+      mapId: 'DEMO_MAP_ID',
+      center: { lat: 0, lng: 0 }, // Placeholder
+      isFractionalZoomEnabled: false,
+      maxZoom: 15,
+      minZoom: 3,
+      streetViewControl: false,
+      zoom: 10,
+    });
+
+    try {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        const userCoords = { lat: latitude, lng: longitude };
+        const marker = new Marker({ position: userCoords });
+        marker.setMap(mapRef.current);
+        mapRef.current.panTo(userCoords);
+      }, (error) => {
+        console.error('Error retrieving geolocation:', error);
+      });
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+
+    const { AdvancedMarkerElement: Marker, PinElement } = libraries[MARKER_LIBRARY];
+
+    markersRef.current = [];
+
+    // Iterate over the bars array and create markers using PinElement
+    const markers = bars.map((bar) => {
+      const pin = new PinElement();
+      pin.glyph = bar.name;
+      pin.background = "#00ff00"; // Customize pin color
+
+      const position = { lat: bar.latitude, lng: bar.longitude };
+      const marker = new Marker({
+        position,
+        content: pin.element,
       });
 
-      markerCluster.current = new MarkerClusterer({
-         map: mapRef.current,
-         markers,
-      });
-   }, [libraries]);
+      marker.setMap(mapRef.current);
+      markersRef.current.push(marker);
+      return marker;
+    });
 
-return (
+    markerCluster.current = new MarkerClusterer({
+      map: mapRef.current,
+      markers,
+    });
+  }, [libraries, bars]);
+
+  // Filter the bars array based on the search term
+  const filteredBars = bars.filter((bar) =>
+    bar.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
     <Box id="map-container">
       <Box className="search-bar">
-        <input ref={inputRef} type="text" />
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchTerm}
+          onChange={handleSearch} // Trigger search on input change
+          placeholder="Search for a bar..."
+        />
+
+        {/* Suggestions dropdown */}
+        {showSuggestions && searchTerm && filteredBars.length > 0 && (
+          <Box className="suggestions">
+            {filteredBars.map((bar) => (
+              <Box
+                key={bar.id}
+                className="suggestion-item"
+                onClick={() => zoomToBar(bar)} // Zoom to bar on click
+              >
+                {bar.name}
+              </Box>
+            ))}
+          </Box>
+        )}
       </Box>
       <Box id="map" ref={mapNodeRef} />
     </Box>
