@@ -6,6 +6,7 @@ const BarEvents = () => {
   const { id } = useParams(); // Get bar ID from the URL
   const [bar, setBar] = useState(null);
   const [events, setEvents] = useState([]);
+  const [address, setAddress] = useState([]);
 
   useEffect(() => {
     // Fetch bar details
@@ -17,6 +18,15 @@ const BarEvents = () => {
     fetch(`http://localhost:3001/api/v1/bars/${id}/events`)
       .then(response => response.json())
       .then(data => setEvents(data.events));
+    
+    // Fetch address for the bar
+    fetch(`http://localhost:3001/api/v1/bars/${id}/addresses`)
+      .then(response => response.json())
+      .then(data => setAddress(data.address));
+
+      //console.log('Events: ', events)
+      //console.log('Bar: ', bar)
+      //console.log('Address: ', address)
   }, [id]);
 
   if (!bar) return <p>Loading bar details...</p>;
@@ -24,12 +34,13 @@ const BarEvents = () => {
   return (
     <Container>
       <Typography variant="h4">{bar.name}</Typography>
-      <Typography variant="h6">Location: {bar.location}</Typography>
+      <Typography variant="h6">Latitude: {bar.latitude}</Typography>
+      <Typography variant="h6">Longitude: {bar.longitude}</Typography>
       
       <Typography variant="h5" mt={4}>Events:</Typography>
       <Grid container spacing={2} mt={2}>
         {events.map((event) => (
-          <Grid item xs={12} sm={6} md={4} key={event.id}>
+          <Grid item xs={12} sm={8} md={8} key={event.id}>
             <Card>
               <CardContent>
                 <Typography variant="h6">{event.name}</Typography>

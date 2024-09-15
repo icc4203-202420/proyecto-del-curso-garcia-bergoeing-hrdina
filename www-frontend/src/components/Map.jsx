@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { useLoadGMapsLibraries } from '../hooks/useLoadGMapsLibraries';
@@ -14,6 +15,7 @@ const Map = () => {
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
   const [showSuggestions, setShowSuggestions] = useState(false); // To toggle suggestions visibility
   const inputRef = useRef();
+  const navigate = useNavigate();
   
   const markersRef = useRef([]);
 
@@ -93,6 +95,11 @@ const Map = () => {
       const marker = new Marker({
         position,
         content: pin.element,
+      });
+
+      // Add a click listener to each marker to navigate to the bar's page
+      marker.addListener('click', () => {
+        navigate(`/bars/${bar.id}/events`); // Navigate to bar page on click
       });
 
       marker.setMap(mapRef.current);

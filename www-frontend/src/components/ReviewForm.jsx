@@ -11,7 +11,10 @@ import { useNavigate } from 'react-router-dom';
 const validationSchema = Yup.object({
   text: Yup.string()
     .required('Requiere de justificación para poder dejar un review')
-    .min(16, 'El review debe tener al menos mas de 15 caracteres'),
+    .test(
+      'minWords',
+      'El review debe tener al menos 15 palabras',
+      (value) => value && value.split(' ').filter(word => word !== '').length >= 15),
   rating: Yup.number().required('Debe seleccionar una calificación')
 });
 

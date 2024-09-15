@@ -10,6 +10,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
 import CampaignIcon from '@mui/icons-material/Campaign';
+import PinDropIcon from '@mui/icons-material/PinDrop';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'; 
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -29,7 +30,7 @@ import {jwtDecode} from 'jwt-decode';
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [value, setValue] = useState('home');
+  const [value, setValue] = useState('map');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const navigate = useNavigate();  // Initialize navigate here
@@ -49,6 +50,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user_id');
+    setValue('map')
     setIsAuthenticated(false);
   };
 
@@ -123,23 +125,11 @@ function App() {
         <List>
           {isAuthenticated ? (
             <>
-              <ListItem button component={Link} to="/map" onClick={toggleDrawer}>
+              <ListItem button component={Link} to="/" onClick={toggleDrawer}>
                 <ListItemIcon>
                   <HomeIcon />
                 </ListItemIcon>
                 <ListItemText primary="Home" />
-              </ListItem>
-              <ListItem button component={Link} to="/beers" onClick={toggleDrawer}>
-                <ListItemIcon>
-                  <SearchIcon />
-                </ListItemIcon>
-                <ListItemText primary="Beers" />
-              </ListItem>
-              <ListItem button component={Link} to="/bars" onClick={toggleDrawer}>
-                <ListItemIcon>
-                  <SportsBarIcon />
-                </ListItemIcon>
-                <ListItemText primary="Bars" />
               </ListItem>
               <ListItem button component={Link} to="/user-search" onClick={toggleDrawer}>
                 <ListItemIcon>
@@ -164,23 +154,21 @@ function App() {
           <Route path="/map" element={<Map />} />
           <Route path="/beers" element={<BeerList />} />
           <Route path="/bars" element={<BarList />} />
-          <Route path="/bars/:id/events" element={<EventList />} />
           <Route path="/user-search" element={<UserSearch />} />
           <Route path="/login" element={<LoginForm tokenHandler={handleLogin} />} />
           <Route path="/signup" element={<RegistrationForm />} />
           <Route path="/beers/:beerId/details" element={<BeerDetails />} />
           <Route path="/beers/:beerId/review" element={<ReviewForm />} />
-        <Route path="/bars/:id/events" element={<BarEvents />} /> {/* Bar Events */}
+          <Route path="/bars/:id/events" element={<BarEvents />} /> {/* Bar Events */}
         </Routes>
       </Container>
 
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
         {isAuthenticated ? ( 
           <BottomNavigation value={value} onChange={handleChange}>
-            <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />} component={Link} to="/map" />
+            <BottomNavigationAction label="Map" value="map" icon={<HomeIcon />} component={Link} to="/map" />
             <BottomNavigationAction label="Beers" value="beers" icon={<SportsBarIcon />} component={Link} to="/beers" />
             <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
-            <BottomNavigationAction label="Events" value="events" icon={<CampaignIcon />} component={Link} to="/bars/:id/events" />
           </BottomNavigation>
         ) : null}
       </Paper>
