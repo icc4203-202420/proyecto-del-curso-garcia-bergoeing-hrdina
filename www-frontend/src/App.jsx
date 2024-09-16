@@ -26,6 +26,7 @@ import RegistrationForm from './components/SignUp';
 import BeerDetails from './components/BeerDetails';
 import ReviewForm from './components/ReviewForm';
 import BarEvents from './components/BarEvents';
+import AddCheckIn from './components/AddCheckIn';
 import {jwtDecode} from 'jwt-decode';
 
 function App() {
@@ -159,7 +160,8 @@ function App() {
           <Route path="/signup" element={<RegistrationForm />} />
           <Route path="/beers/:beerId/details" element={<BeerDetails />} />
           <Route path="/beers/:beerId/review" element={<ReviewForm />} />
-          <Route path="/bars/:id/events" element={<BarEvents />} /> {/* Bar Events */}
+          <Route path="/bars/:id/events" element={<BarEvents />} />
+          <Route path="/bars/:barId/events/:eventId/check-in" element={<AddCheckIn />} />
         </Routes>
       </Container>
 

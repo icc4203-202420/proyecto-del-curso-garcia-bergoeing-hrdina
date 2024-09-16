@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Grid, Typography, Card, CardContent } from '@mui/material';
+import AddCheckIn from './AddCheckIn';
 
 const BarEvents = () => {
   const { id } = useParams(); // Get bar ID from the URL
@@ -36,7 +37,7 @@ const BarEvents = () => {
       <Typography variant="h4">{bar.name}</Typography>
       <Typography variant="h6">Latitude: {bar.latitude}</Typography>
       <Typography variant="h6">Longitude: {bar.longitude}</Typography>
-      
+
       <Typography variant="h5" mt={4}>Events:</Typography>
       <Grid container spacing={2} mt={2}>
         {events.map((event) => (
@@ -51,6 +52,15 @@ const BarEvents = () => {
                 <Typography variant="body2">
                   End Date: {new Date(event.end_date).toLocaleDateString()}
                 </Typography>
+
+                {/* Conditionally render the AddCheckIn button */}
+                {bar && event.id && (  // Check for both bar and event data
+                  <AddCheckIn
+                    bar_id={bar.id}
+                    event_id={event.id}
+                    onCheckIn={(data) => console.log(data)} // Replace with your logic
+                  />
+                )}
               </CardContent>
             </Card>
           </Grid>
@@ -59,5 +69,4 @@ const BarEvents = () => {
     </Container>
   );
 };
-
 export default BarEvents;
