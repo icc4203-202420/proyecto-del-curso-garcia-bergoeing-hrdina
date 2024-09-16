@@ -53,4 +53,7 @@ if Rails.env.development?
     end
   end
 
+  Country.create!(name: 'Chile')
+  Address.create!(line1: 'Isabel La Católica 4208', line2: 'Las Condes', city: 'Santiago', country_id: Country.last.id, user_id: 3)
+  Bar.create!(name: 'Bar la Providencia (Las Condes)', latitude: -33.42796928965203, longitude: -70.57969411973845, address_id: Address.last.id)
 end

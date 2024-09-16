@@ -18,25 +18,22 @@ const BarEvents = () => {
     // Fetch events for the bar
     fetch(`http://localhost:3001/api/v1/bars/${id}/events`)
       .then(response => response.json())
-      .then(data => setEvents(data.events));
-    
-    // Fetch address for the bar
-    fetch(`http://localhost:3001/api/v1/bars/${id}/addresses`)
-      .then(response => response.json())
-      .then(data => setAddress(data.address));
-
-      //console.log('Events: ', events)
-      //console.log('Bar: ', bar)
-      //console.log('Address: ', address)
+      .then(data => {
+        setEvents(data.events)
+        setAddress(data.address)
+      })
   }, [id]);
+
+  useEffect(()=>{
+    console.log("Address: ", address)
+  })
 
   if (!bar) return <p>Loading bar details...</p>;
 
   return (
     <Container>
       <Typography variant="h4">{bar.name}</Typography>
-      <Typography variant="h6">Latitude: {bar.latitude}</Typography>
-      <Typography variant="h6">Longitude: {bar.longitude}</Typography>
+      <Typography variant="h6">Address: {address.line1}</Typography>
 
       <Typography variant="h5" mt={4}>Events:</Typography>
       <Grid container spacing={2} mt={2}>

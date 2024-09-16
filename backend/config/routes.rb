@@ -16,11 +16,10 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       resources :bars do
-        resources :events, only: [:index, :show] # Add events as a nested resource within bars
+        # resources :events, only: [:index, :show] # Add events as a nested resource within bars
         resources :events do
           resources :attendances
         end
-        resources :addresses, only: [:index] # Add addresses as a nested resource within bars
       end
       resources :beers do
         resources :reviews, only: [:index, :create]

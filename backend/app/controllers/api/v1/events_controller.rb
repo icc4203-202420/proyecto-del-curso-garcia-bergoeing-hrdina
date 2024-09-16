@@ -9,8 +9,9 @@ class API::V1::EventsController < ApplicationController
 
   def index
       events = @bar.events
+      address = Address.find_by(id: @bar.address_id)
       
-      render json: { events: events }, status: :ok 
+      render json: { events: events, address: address }, status: :ok 
   end
 
   def show
