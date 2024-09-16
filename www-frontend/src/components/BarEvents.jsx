@@ -40,7 +40,7 @@ const BarEvents = () => {
       <Typography variant="h5" mt={4}>Events:</Typography>
       <Grid container spacing={2} mt={2}>
         {events.map((event) => (
-          <Grid item xs={12} sm={8} md={8} key={event.id}>
+          <Grid item xs={12} sm={8} md={8} key={event.id} sx={{ minWidth: 300 }}>
             <Card>
               <CardContent>
                 <Typography variant="h6">{event.name}</Typography>

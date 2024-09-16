@@ -51,25 +51,28 @@ const BeerList = () => {
       />
       <Grid container spacing={2}>
         {filteredBeers.map((beer) => (
-          <Grid item xs={12} sm={6} md={4} key={beer.id}>
-            <Card>
+          <Grid item xs={12} sm={6} md={4} key={beer.id} sx={{ minWidth: 300 }}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               {beer.image_url && (
                 <CardMedia
                   component="img"
-                  height="140"
+                  sx={{ height: 140, objectFit: 'contain' }} // Ensures the image fits inside without being stretched
                   image={beer.image_url}
                   alt={beer.name}
                 />
               )}
-              <CardContent>
-                <Typography variant="h5">{beer.name}</Typography>
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography variant="h5" component="div">{beer.name}</Typography>
                 <Typography variant="body2">ABV: {beer.alcohol}%</Typography>
                 <Typography variant="body2">IBU: {beer.ibu}</Typography>
+              </CardContent>
+              <CardContent sx={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
                 <Button
                   component={Link}
                   to={`/beers/${beer.id}/details`}
                   variant="contained"
                   color="primary"
+                  fullWidth
                 >
                   View Details
                 </Button>
@@ -78,6 +81,7 @@ const BeerList = () => {
                   to={`/beers/${beer.id}/review`}
                   variant="contained"
                   color="secondary"
+                  fullWidth
                 >
                   Write Review
                 </Button>
