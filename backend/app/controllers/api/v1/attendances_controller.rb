@@ -1,5 +1,5 @@
 class API::V1::AttendancesController < ApplicationController
-  include Authenticable
+  #include Authenticable
   before_action :set_event
   #check in de los users
   def create

@@ -27,6 +27,7 @@ import BeerDetails from './components/BeerDetails';
 import ReviewForm from './components/ReviewForm';
 import BarEvents from './components/BarEvents';
 import AddCheckIn from './components/AddCheckIn';
+import AttendancesList from './components/AttendancesList';
 import {jwtDecode} from 'jwt-decode';
 
 function App() {
@@ -162,13 +163,14 @@ function App() {
           <Route path="/beers/:beerId/review" element={<ReviewForm />} />
           <Route path="/bars/:id/events" element={<BarEvents />} />
           <Route path="/bars/:barId/events/:eventId/check-in" element={<AddCheckIn />} />
+          <Route path="/events/:event_id/attendances" element={<AttendancesList />} />
         </Routes>
       </Container>
 
       <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
         {isAuthenticated ? ( 
           <BottomNavigation value={value} onChange={handleChange}>
-            <BottomNavigationAction label="Map" value="map" icon={<HomeIcon />} component={Link} to="/map" />
+            <BottomNavigationAction label="Map" value="map" icon={<PinDropIcon />} component={Link} to="/map" />
             <BottomNavigationAction label="Beers" value="beers" icon={<SportsBarIcon />} component={Link} to="/beers" />
             <BottomNavigationAction label="Bars" value="bars" icon={<LocalBarIcon />} component={Link} to="/bars" />
           </BottomNavigation>
@@ -179,4 +181,3 @@ function App() {
 }
 
 export default App;
-
