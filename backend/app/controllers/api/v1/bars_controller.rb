@@ -7,9 +7,16 @@ class API::V1::BarsController < ApplicationController
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   def index
-    @bars = Bar.all
-    render json: { bars: @bars }, status: :ok
-  end
+    @bars = Bar.includes(:address).all
+  
+    bars_with_addresses = @bars.map do |bar|
+      bar_json = bar.as_json
+      address = bar.address.as_json
+      bar_json.merge({ address: address })
+    end
+  
+    render json: { bars: bars_with_addresses }, status: :ok
+  end  
 
   def show
     if @bar.image.attached?
@@ -43,7 +50,7 @@ class API::V1::BarsController < ApplicationController
     end
   end
 
-  # Método para eliminar un bar existente
+  # MÃ©todo para eliminar un bar existente
   def destroy
     if @bar.destroy
       render json: { message: 'Bar successfully deleted.' }, status: :no_content

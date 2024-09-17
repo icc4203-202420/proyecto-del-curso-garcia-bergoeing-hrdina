@@ -54,6 +54,19 @@ if Rails.env.development?
   end
 
   Country.create!(name: 'Chile')
+  
   Address.create!(line1: 'Isabel La Católica 4208', line2: 'Las Condes', city: 'Santiago', country_id: Country.last.id, user_id: 3)
   Bar.create!(name: 'Bar la Providencia (Las Condes)', latitude: -33.42796928965203, longitude: -70.57969411973845, address_id: Address.last.id)
+
+  Address.create!(line1: 'Costanera Sur S.J.E. de Balaguer 6400', line2: 'Vitacura', city: 'Santiago', country_id: Country.last.id, user_id: 7)
+  Bar.create!(name: 'Bar Santiago Boderio', latitude: -33.379176342578106, longitude: -70.57713633847554, address_id: Address.last.id)
+
+  Address.create!(line1: 'P.º Bulnes 367', line2: 'Santiago', city: 'Santiago', country_id: Country.last.id, user_id: 9)
+  Bar.create!(name: 'El Mesón Beer Garden', latitude: -33.45056482517121, longitude: -70.65307964315375, address_id: Address.last.id)
+
+  Address.create!(line1: 'San Antonio 327', line2: 'Santiago', city: 'Santiago', country_id: Country.last.id, user_id: 2)
+  Bar.create!(name: 'Bar Quinta Avenida', latitude: -33.43577294110829, longitude: -70.64768450818976, address_id: Address.last.id)
+
+  Address.create!(line1: 'Dublé Almeyda 2900', line2: 'Ñuñoa', city: 'Santiago', country_id: Country.last.id, user_id: 12)
+  Bar.create!(name: 'Patio Almeyda', latitude: -33.45538772027981, longitude: -70.60124781082102, address_id: Address.last.id)
 end

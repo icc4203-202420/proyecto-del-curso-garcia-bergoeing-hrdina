@@ -3,7 +3,7 @@ class API::V1::AttendancesController < ApplicationController
   before_action :set_event
   #check in de los users
   def create
-    attendance = Attendance.find_or_initialize_by(user: current_user, event: @event)
+    attendance = Attendance.find_or_initialize_by(user: User.find(params[:user_id]), event: @event)
     if attendance.checked_in
       render json: { message: "Ya has confirmado tu asistencia." }, status: :unprocessable_entity
     elsif attendance.check_in

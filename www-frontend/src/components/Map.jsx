@@ -48,7 +48,7 @@ const Map = () => {
       mapRef.current.panTo(position);
     }
     setShowSuggestions(false); // Hide suggestions once a bar is selected
-    setSearchTerm(bar.name); // Update search bar with selected bar name
+    setSearchTerm(`${bar.name}, ${bar.address.line1}, ${bar.address.city}`); // Update search bar with selected bar details
   };
 
   useEffect(() => {
@@ -113,10 +113,14 @@ const Map = () => {
     });
   }, [libraries, bars]);
 
-  // Filter the bars array based on the search term
-  const filteredBars = bars.filter((bar) =>
-    bar.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter the bars array based on the search term, including name, address, and city
+  const filteredBars = bars.filter((bar) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const nameMatch = bar.name.toLowerCase().includes(lowerCaseSearchTerm);
+    const addressMatch = bar.address?.line1.toLowerCase().includes(lowerCaseSearchTerm);
+    const cityMatch = bar.address?.city.toLowerCase().includes(lowerCaseSearchTerm);
+    return nameMatch || addressMatch || cityMatch;
+  });
 
   return (
     <Box id="map-container">
@@ -126,7 +130,7 @@ const Map = () => {
           type="text"
           value={searchTerm}
           onChange={handleSearch} // Trigger search on input change
-          placeholder="Search for a bar..."
+          placeholder="Search for a bar by name, address, or city..."
         />
 
         {/* Suggestions dropdown */}
@@ -138,7 +142,7 @@ const Map = () => {
                 className="suggestion-item"
                 onClick={() => zoomToBar(bar)} // Zoom to bar on click
               >
-                {bar.name}
+                {`${bar.name}, ${bar.address.line1}, ${bar.address.city}`}
               </Box>
             ))}
           </Box>
