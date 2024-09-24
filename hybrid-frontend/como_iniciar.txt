@@ -1,0 +1,32 @@
+en esta carpeta usar npm install/npm i
+despues usar npm run start y te genera un QR code
+es importante que la red wifi del compu y la red wifi del celu sean la misma
+despues se deberia actualizar en tiempo real o mai god epico papus
+
+FILE BASED(omaigod) ROUTES
+ya no se tienen que escribir la ruta a la mala
+/app
+--/beers
+    [id].js
+
+la ruta a este componente es
+/beers/:id
+
+si queremos mostrar todas habria que crear un componente index.js
+
+hacer un router.back, te manda a la anterior, COMO UN STACK asi que si vamos a la vista 1 a la 3 a la 2, hacer un .back te lleva a la 3
+
+para cachar el id de una chucha, useLocalSearchParams
+
+tips de la 9 y 10 de la 1.5
+
+hay un problema, solo se puede usar la camara si se esta en https
+esto es una broma, dice subir imagenes, no sacar fotos, dios mio no lo soporto, en la parte de los puntos dice eso
+pero en los requisitos debe ser con camara asi que ayuda
+
+<input type= 'file' multiple accept=" .png ....">  y con eso aparece una chucha para subir archivos
+
+
+useEffect(())
+const inputFiles = useRef()
+<input ref={inputFiles}  type= 'file' multiple accept=" .png ...." onChange{handlefilesChanges}>
