@@ -16,13 +16,14 @@ const UploadEventPicture = ({ eventId }) => {
       await axios.post(`http://localhost:3001/api/v1/events/${eventId}/event_pictures`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${localStorage.getItem("token")}`  // Include your token here
         },
       });
       alert('Imagen subida con éxito');
     } catch (error) {
       console.error('Error subiendo la imagen:', error);
     }
-  };
+  };  
 
   return (
     <div>
