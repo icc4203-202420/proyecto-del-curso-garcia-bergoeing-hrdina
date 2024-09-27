@@ -28,6 +28,7 @@ import ReviewForm from './components/ReviewForm';
 import BarEvents from './components/BarEvents';
 import AddCheckIn from './components/AddCheckIn';
 import AttendancesList from './components/AttendancesList';
+import EventGallery from './components/EventGallery'
 import {jwtDecode} from 'jwt-decode';
 
 function App() {
@@ -164,6 +165,7 @@ function App() {
           <Route path="/bars/:id/events" element={<BarEvents />} />
           <Route path="/bars/:barId/events/:eventId/check-in" element={<AddCheckIn />} />
           <Route path="/events/:event_id/attendances" element={<AttendancesList />} />
+          <Route path="/events/:event_id/gallery" element={<EventGallery />} />
         </Routes>
       </Container>
 

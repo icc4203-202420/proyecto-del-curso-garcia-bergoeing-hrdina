@@ -26,8 +26,9 @@ Rails.application.routes.draw do
         resources :reviews, only: [:index, :create]
       end
 
-      resources :events, only: [:show,:create, :update, :destroy] do # Non-nested events routes
+      resources :events, only: [:show, :create, :update, :destroy] do # Non-nested events routes
         resources :attendances
+        resources :event_pictures
       end
 
       resources :users do

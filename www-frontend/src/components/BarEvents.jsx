@@ -31,6 +31,12 @@ const BarEvents = () => {
     }
   };
 
+  const handleViewGallery = (event_id) => {
+    if (event_id) {
+      navigate(`/events/${event_id}/gallery`); // Navigate to the gallery for the event
+    }
+  };
+
   if (!bar) return <p>Loading bar details...</p>;
 
   return (
@@ -71,6 +77,16 @@ const BarEvents = () => {
                   fullWidth
                 >
                   See Attendances
+                </Button>
+                {/* Gallery button */}
+                <Button
+                  onClick={() => handleViewGallery(event.id)} // Button for gallery
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  sx={{ mt: 1 }}
+                >
+                  View Photo Gallery
                 </Button>
               </CardContent>
             </Card>

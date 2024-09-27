@@ -10,7 +10,7 @@ class API::V1::UsersController < ApplicationController
 
   # GET /users/:id
   def show
-    
+    #render json: @user, status: :ok
   end
 
   # GET /users/:id/friendship
