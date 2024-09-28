@@ -15,18 +15,28 @@ class API::V1::EventsController < ApplicationController
   end
 
   def show
-      address = Address.find_by(id: Bar.find_by(id: @event.bar_id).address_id)
-      @event_pictures = @event.event_pictures # Get all event pictures associated with the event
-      Rails.logger.info "Addresses are: #{address}"
-      if @event.flyer.attached?
-          render json: @event.as_json.merge({
-              image_url: url_for(@event.image),
-              thumbnail_url: url_for(@event.thumbnail)}),
-              status: :ok
-      else
-          render json: { event: @event.as_json, address: address, event_picture: @event_pictures.as_json }, status: :ok
-      end
+    address = Address.find_by(id: Bar.find_by(id: @event.bar_id).address_id)
+    @event_pictures = @event.event_pictures # Get all event pictures associated with the event
+    Rails.logger.info "Addresses are: #{address}"
+    
+    event_pictures_data = @event_pictures.map do |picture|
+      { id: picture.id, description: picture.description, image_url: url_for(picture.image) }
+    end
+  
+    if @event.flyer.attached?
+      render json: @event.as_json.merge({
+        image_url: url_for(@event.image),
+        thumbnail_url: url_for(@event.thumbnail)
+      }), status: :ok
+    else
+      render json: { 
+        event: @event.as_json, 
+        address: address, 
+        event_pictures: event_pictures_data 
+      }, status: :ok
+    end
   end
+  
 
   def create
       @event = Event.new(event_params.except(:image_base64))

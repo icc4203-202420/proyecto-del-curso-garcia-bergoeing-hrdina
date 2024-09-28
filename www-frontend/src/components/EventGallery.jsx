@@ -15,7 +15,7 @@ const EventGallery = () => {
       .then((response) => response.json())
       .then((data) => {
         // Ensure photos is correctly accessed from the response
-        const eventPictures = data.event_picture || []; // Adjusted to fetch event pictures
+        const eventPictures = data.event_pictures || []; // Adjusted to fetch event pictures
         setPhotos(eventPictures);
         console.log(data);
       })

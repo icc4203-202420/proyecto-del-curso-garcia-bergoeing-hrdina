@@ -1,4 +1,5 @@
 class API::V1::EventPicturesController < ApplicationController
+  include ImageProcessing
   before_action :set_event, only: [:create, :index]
 
   def create
@@ -21,6 +22,14 @@ class API::V1::EventPicturesController < ApplicationController
   end
 
   private
+
+  def handle_image_attachment
+    decode_image = decode_image(event_params[:image_base64])
+    @event.flyer.attach(io: decoded_image[:io],
+        filename: decode_image[:filename],
+        content_type: decoded_image[:content_type]
+    )
+end
 
   def set_event
     @event = Event.find(params[:event_id])
