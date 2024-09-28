@@ -16,6 +16,7 @@ class API::V1::EventsController < ApplicationController
 
   def show
       address = Address.find_by(id: Bar.find_by(id: @event.bar_id).address_id)
+      @event_pictures = @event.event_pictures # Get all event pictures associated with the event
       Rails.logger.info "Addresses are: #{address}"
       if @event.flyer.attached?
           render json: @event.as_json.merge({
@@ -23,7 +24,7 @@ class API::V1::EventsController < ApplicationController
               thumbnail_url: url_for(@event.thumbnail)}),
               status: :ok
       else
-          render json: { event: @event.as_json, address: address }, status: :ok
+          render json: { event: @event.as_json, address: address, event_picture: @event_pictures.as_json }, status: :ok
       end
   end
 

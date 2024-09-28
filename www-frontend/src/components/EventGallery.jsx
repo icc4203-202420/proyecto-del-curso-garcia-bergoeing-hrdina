@@ -2,43 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Typography, Grid, Button, Card, CardMedia, TextField, Box } from '@mui/material';
 
-const EventGallery = () => 
-{
+const EventGallery = () => {
   const { event_id } = useParams(); // Get event ID from URL
   const [photos, setPhotos] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState(''); // New state for description
   const user_id = localStorage.getItem("user_id");
 
-  useEffect(() => 
-  {
-    // Fetch event photos
+  useEffect(() => {
+    // Fetch event details including photos
     fetch(`http://localhost:3001/api/v1/events/${event_id}`)
       .then((response) => response.json())
-      .then((data) => 
-      {
-        // Ensure data.photos is an array or set it to an empty array
-        setPhotos(Array.isArray(data.photos) ? data.photos : []);
+      .then((data) => {
+        // Ensure photos is correctly accessed from the response
+        const eventPictures = data.event_picture || []; // Adjusted to fetch event pictures
+        setPhotos(eventPictures);
+        console.log(data);
       })
-      .catch((error) => 
-      {
+      .catch((error) => {
         console.error('Error fetching photos:', error);
         setPhotos([]); // In case of an error, set photos to an empty array
       });
   }, [event_id]);
 
-  const handleFileChange = (event) => 
-  {
+  const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
 
-  const handleDescriptionChange = (event) => 
-  {
+  const handleDescriptionChange = (event) => {
     setDescription(event.target.value);
   };
 
-  const handlePhotoUpload = () => 
-  {
+  const handlePhotoUpload = () => {
     if (!selectedFile) return;
 
     const formData = new FormData();
@@ -50,67 +45,109 @@ const EventGallery = () =>
       body: formData,
     })
       .then((response) => response.json())
-      .then((data) => 
-      {
+      .then((data) => {
+        // Ensure the new photo data is correctly structured
         setPhotos((prevPhotos) => [...prevPhotos, data.photo]);
         setSelectedFile(null);
         setDescription(''); // Clear description after upload
       })
-      .catch((error) => 
-      {
+      .catch((error) => {
         console.error('Error uploading photo:', error);
       });
   };
 
   return (
-    <Container>
-      <Typography variant="h4">Photo Gallery</Typography>
+    <Container sx={{ backgroundColor: '#222', padding: 3 }}>
+      <Typography variant="h4" sx={{ color: 'white' }}>Photo Gallery</Typography>
 
-      {/* Photo upload section */}
       <Box sx={{ mt: 2 }}>
-        <Typography variant="h6">Upload a New Photo</Typography>
-        <input type="file" onChange={handleFileChange} />
-        
+        <Typography variant="h6" sx={{ color: 'white' }}>Upload a New Photo</Typography>
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          style={{ display: 'none' }} // Hide default file input
+          id="file-upload"
+        />
+        <label htmlFor="file-upload">
+          <Button variant="contained" component="span" sx={{ backgroundColor: '#1e88e5', color: 'white' }}>
+            Select File
+          </Button>
+        </label>
+        {selectedFile && <Typography sx={{ color: 'white', mt: 1 }}>{selectedFile.name}</Typography>}
+
         <TextField
           fullWidth
           label="Description"
           variant="outlined"
           value={description}
           onChange={handleDescriptionChange}
-          sx={{ mt: 2 }}
+          sx={{
+            mt: 2,
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'white',
+              },
+              '&:hover fieldset': {
+                borderColor: 'white',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'blue',
+              },
+              '& input': {
+                color: 'white',
+              },
+            },
+            '& .MuiInputBase-input': {
+              color: 'white',
+            },
+            '& .MuiInputLabel-root': {
+              color: 'white',
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'white',
+            },
+            backgroundColor: '#333',
+          }}
           multiline
           rows={3}
         />
-        
+
         <Button
           variant="contained"
-          color="primary"
+          sx={{
+            mt: 2,
+            backgroundColor: '#1e88e5',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#1565c0',
+            },
+          }}
           onClick={handlePhotoUpload}
           disabled={!selectedFile || !description}
-          sx={{ mt: 2 }}
         >
           Upload Photo
         </Button>
       </Box>
 
-      {/* Gallery display */}
       <Grid container spacing={2} mt={4}>
         {photos.map((photo) => (
-          <Grid item xs={12} sm={6} md={4} key={photo?.id || Math.random()}> {/* Use optional chaining for id */}
-            <Card>
-              {photo?.url ? (
+          <Grid item xs={12} sm={6} md={4} key={photo?.id || Math.random()}>
+            <Card sx={{ backgroundColor: '#444' }}>
+              {photo?.image_url ? ( // Assuming the API returns an image_url field
                 <CardMedia
                   component="img"
                   height="200"
-                  image={photo.url}
-                  alt={`Photo ${photo?.id || 'N/A'}`} // Optional chaining for alt text
+                  image={photo.image_url} // Use the correct field for image URL
+                  alt={`Photo ${photo?.id || 'N/A'}`}
                 />
               ) : (
-                <Typography variant="body2" sx={{ p: 2 }}>
+                <Typography variant="body2" sx={{ p: 2, color: 'white' }}>
                   No image available
                 </Typography>
               )}
-              <Typography variant="body2" sx={{ p: 2 }}>
+              <Typography variant="body2" sx={{ p: 2, color: 'white' }}>
                 {photo?.description || 'No description'}
               </Typography>
             </Card>

@@ -1,5 +1,5 @@
 class API::V1::EventPicturesController < ApplicationController
-  before_action :set_event, only: [:create]
+  before_action :set_event, only: [:create, :index]
 
   def create
     @event_picture = @event.event_pictures.new(event_picture_params)
@@ -13,6 +13,11 @@ class API::V1::EventPicturesController < ApplicationController
       Rails.logger.debug @event_picture.errors.full_messages
       render json: { errors: @event_picture.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  def index
+    @event_pictures = @event.event_pictures # Get all event pictures associated with the event
+    render json: @event_pictures # Render the event pictures as JSON
   end
 
   private

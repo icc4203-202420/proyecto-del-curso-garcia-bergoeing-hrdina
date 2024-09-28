@@ -75,7 +75,8 @@ const ReviewForm = () => {
           p: 4,
           borderRadius: 2,
           boxShadow: 3
-        }}>
+        }}
+      >
         <Typography variant="h4">Escribir una Reseña</Typography>
         <Formik
           initialValues={{ text: '', rating: 0, user_id: '' }}
@@ -108,8 +109,11 @@ const ReviewForm = () => {
                         borderColor: 'blue',
                       },
                       '& input': {
-                        color: 'white',
+                        color: 'white', // Color del texto en el input
                       },
+                    },
+                    '& .MuiInputBase-input': {
+                      color: 'white', // Color del texto del usuario
                     },
                     '& .MuiInputLabel-root': {
                       color: 'white',
@@ -146,12 +150,12 @@ const ReviewForm = () => {
                 />
               </Box>
               <Field name="user_id" type="hidden" value={userId} />
-
+  
               <Box sx={{ mt: 3 }}>
-                <Button 
+                <Button
                   type="submit"
-                  fullWidth 
-                  variant="contained" 
+                  fullWidth
+                  variant="contained"
                   color="primary"
                   disabled={isSubmitting || loading}
                 >
