@@ -28,7 +28,11 @@ Rails.application.routes.draw do
 
       resources :events, only: [:show, :create, :update, :destroy] do # Non-nested events routes
         resources :attendances
-        resources :event_pictures
+        resources :event_pictures, only: [:create] do
+          collection do
+            post ':user_id', to: 'event_pictures#create', as: :create_with_user
+          end
+        end
       end
 
       resources :users do

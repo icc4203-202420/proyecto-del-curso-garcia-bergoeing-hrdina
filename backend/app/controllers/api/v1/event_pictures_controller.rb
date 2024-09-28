@@ -3,7 +3,7 @@ class API::V1::EventPicturesController < ApplicationController
 
   def create
     @event_picture = @event.event_pictures.new(event_picture_params)
-    @event_picture.user = current_user
+    @event_picture.user = User.find(params["user_id"].to_i)
 
     Rails.logger.debug params
 

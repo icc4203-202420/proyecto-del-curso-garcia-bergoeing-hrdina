@@ -6,6 +6,7 @@ const EventGallery = () => {
   const { event_id } = useParams(); // Get event ID from URL
   const [photos, setPhotos] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
+  const user_id = localStorage.getItem("user_id")
 
   useEffect(() => {
     // Fetch event photos
@@ -31,7 +32,7 @@ const EventGallery = () => {
     const formData = new FormData();
     formData.append('event_picture[image]', selectedFile); // Adjust the key to match the expected nested format
   
-    fetch(`http://localhost:3001/api/v1/events/${event_id}/event_pictures`, {
+    fetch(`http://localhost:3001/api/v1/events/${event_id}/event_pictures/${user_id}`, {
       method: 'POST',
       body: formData,
     })

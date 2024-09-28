@@ -11,12 +11,13 @@ const UploadEventPicture = ({ eventId }) => {
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append('event_picture[image]', image);
-    
+    formData.append('event_picture[user_id]', localStorage.getItem("user_id")); // Append user_id using hidden input
+
     try {
       await axios.post(`http://localhost:3001/api/v1/events/${eventId}/event_pictures`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem("token")}`  // Include your token here
+          'Authorization': `Bearer ${localStorage.getItem("token")}`,  // Include your token here
         },
       });
       alert('Imagen subida con éxito');
@@ -28,6 +29,8 @@ const UploadEventPicture = ({ eventId }) => {
   return (
     <div>
       <input type="file" onChange={handleImageChange} accept="image/*" />
+      {/* Invisible hidden input to include user_id */}
+      <input type="hidden" name="event_picture[user_id]" value={localStorage.getItem("user_id")} />
       <button onClick={handleSubmit}>Subir Imagen</button>
     </div>
   );
