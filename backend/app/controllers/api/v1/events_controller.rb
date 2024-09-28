@@ -16,11 +16,16 @@ class API::V1::EventsController < ApplicationController
 
   def show
     address = Address.find_by(id: Bar.find_by(id: @event.bar_id).address_id)
-    @event_pictures = @event.event_pictures # Get all event pictures associated with the event
+    @event_pictures = @event.event_pictures.includes(:user) # Get all event pictures associated with the event
     Rails.logger.info "Addresses are: #{address}"
     
     event_pictures_data = @event_pictures.map do |picture|
-      { id: picture.id, description: picture.description, image_url: url_for(picture.image) }
+      { 
+        id: picture.id, 
+        description: picture.description, 
+        image_url: url_for(picture.image),
+        user_handle: picture.user.handle
+     }
     end
   
     if @event.flyer.attached?
@@ -32,7 +37,7 @@ class API::V1::EventsController < ApplicationController
       render json: { 
         event: @event.as_json, 
         address: address, 
-        event_pictures: event_pictures_data 
+        event_pictures: event_pictures_data
       }, status: :ok
     end
   end

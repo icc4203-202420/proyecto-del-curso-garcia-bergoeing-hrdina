@@ -38,7 +38,7 @@ const EventGallery = () => {
 
     const formData = new FormData();
     formData.append('event_picture[image]', selectedFile); // Adjust the key to match the expected nested format
-    formData.append('event_picture[description]', description); // Include description
+    formData.append('event_picture[description]', description); // Include description -> event_picture : {image : ---, decription : ---}
 
     fetch(`http://localhost:3001/api/v1/events/${event_id}/event_pictures/${user_id}`, {
       method: 'POST',
@@ -135,6 +135,12 @@ const EventGallery = () => {
         {photos.map((photo) => (
           <Grid item xs={12} sm={6} md={4} key={photo?.id || Math.random()}>
             <Card sx={{ backgroundColor: '#444' }}>
+              <Typography variant="h5" sx={{ p: 1, color: 'white' }}>
+                {photo?.user_handle || 'Anon'}
+              </Typography>
+              <Typography variant="body2" sx={{ p: 1, color: 'white' }}>
+                {photo?.description || ''}
+              </Typography>
               {photo?.image_url ? ( // Assuming the API returns an image_url field
                 <CardMedia
                   component="img"
@@ -147,9 +153,6 @@ const EventGallery = () => {
                   No image available
                 </Typography>
               )}
-              <Typography variant="body2" sx={{ p: 2, color: 'white' }}>
-                {photo?.description || 'No description'}
-              </Typography>
             </Card>
           </Grid>
         ))}

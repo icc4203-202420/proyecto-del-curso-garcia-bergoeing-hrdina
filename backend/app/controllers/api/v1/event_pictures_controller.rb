@@ -16,11 +16,6 @@ class API::V1::EventPicturesController < ApplicationController
     end
   end
 
-  def index
-    @event_pictures = @event.event_pictures # Get all event pictures associated with the event
-    render json: @event_pictures # Render the event pictures as JSON
-  end
-
   private
 
   def handle_image_attachment
