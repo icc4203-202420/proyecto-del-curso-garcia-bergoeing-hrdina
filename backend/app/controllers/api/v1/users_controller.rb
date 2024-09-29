@@ -5,7 +5,8 @@ class API::V1::UsersController < ApplicationController
   
   # GET /users
   def index
-    @users = User.includes(:reviews, :address).all   
+    @users = User.includes(:reviews, :address).all  
+    render json: @users, status: :ok 
   end
 
   # GET /users/:id

@@ -26,7 +26,7 @@ Rails.application.routes.draw do
         resources :reviews, only: [:index, :create]
       end
 
-      resources :events, only: [:show, :create, :update, :destroy] do # Non-nested events routes
+      resources :events, only: [:index, :show, :create, :update, :destroy] do
         resources :attendances
         resources :event_pictures, only: [:create, :index] do
           collection do
@@ -37,10 +37,7 @@ Rails.application.routes.draw do
 
       resources :users do
         resources :reviews, only: [:index]
-        member do
-          get 'friendships', to: 'users#friendships'
-          post 'friendships', to: 'users#create_friendship'
-        end
+        resources :friendships
       end
 
       resources :reviews, only: [:index, :show, :create, :update, :destroy]

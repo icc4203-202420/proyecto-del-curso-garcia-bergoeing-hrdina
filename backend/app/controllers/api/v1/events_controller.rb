@@ -1,17 +1,21 @@
 class API::V1::EventsController < ApplicationController
   include ImageProcessing
-  include Authenticable
-
+  
   respond_to :json
-  before_action :verify_jwt_token, only: [:create, :update, :destroy]
   before_action :set_event, only: [:show, :update, :destroy]
   before_action :set_bar, only: [:index]
 
   def index
+    if params[:bar_id]
+      set_bar # Solo para la llamada desde un bar
       events = @bar.events
       address = Address.find_by(id: @bar.address_id)
-      
       render json: { events: events, address: address }, status: :ok 
+    else
+      # Nuevo código para obtener todos los eventos
+      events = Event.all.includes(:bar) # Puedes incluir las relaciones que necesites
+      render json: events, status: :ok
+    end
   end
 
   def show
