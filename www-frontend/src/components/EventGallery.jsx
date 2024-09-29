@@ -12,37 +12,35 @@ const EventGallery = () => {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const user_id = localStorage.getItem("user_id");
 
+  // Fetch users for tagging
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const response = await axios.get(`http://localhost:3001/api/v1/users`, {
+        params: { user_id: user_id, event_id: event_id }
+      });
+
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setUsers([]);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
   useEffect(() => {
     // Fetch event details including photos
     fetch(`http://localhost:3001/api/v1/events/${event_id}`)
       .then((response) => response.json())
       .then((data) => {
-        // Ensure photos is correctly accessed from the response
         const eventPictures = data.event_pictures || []; // Adjusted to fetch event pictures
         setPhotos(eventPictures);
-        console.log(data);
       })
       .catch((error) => {
         console.error('Error fetching photos:', error);
         setPhotos([]); // In case of an error, set photos to an empty array
       });
-
-    // Fetch users for tagging
-    const fetchUsers = async () => {
-      setLoadingUsers(true);
-      try {
-        const response = await axios.get(`http://localhost:3001/api/v1/users`, {
-          params: { user_id: user_id, event_id: event_id }
-        });
-
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setUsers([]);
-      } finally {
-        setLoadingUsers(false);
-      }
-    };
     fetchUsers();
   }, [event_id]);
 
@@ -54,30 +52,29 @@ const EventGallery = () => {
     setDescription(event.target.value);
   };
 
-  const handlePhotoUpload = async() => {
+  const handlePhotoUpload = async () => {
     if (!selectedFile) return;
-
+  
     const formData = new FormData();
-    formData.append('event_picture[image]', selectedFile); // Adjust the key to match the expected nested format
-    formData.append('event_picture[description]', description); // Include description -> event_picture : {image : ---, decription : ---}
-
-    fetch(`http://localhost:3001/api/v1/events/${event_id}/event_pictures/${user_id}`, {
-      method: 'POST',
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Ensure the new photo data is correctly structured
-        setPhotos((prevPhotos) => [...prevPhotos, data.photo]);
-        setSelectedFile(null);
-        setDescription(''); // Clear description after upload
-      })
-      .catch((error) => {
-        console.error('Error uploading photo:', error);
+    formData.append('event_picture[image]', selectedFile);
+    formData.append('event_picture[description]', description);
+  
+    try {
+      await fetch(`http://localhost:3001/api/v1/events/${event_id}/event_pictures/${user_id}`, {
+        method: 'POST',
+        body: formData,
       });
-
-    const eventsResponse = await axios.get(`http://localhost:3001/api/v1/events/${event_id}`)
-    setPhotos(eventsResponse.data.event_pictures || [])
+  
+      // Refresca las fotos después de subir
+      const eventsResponse = await axios.get(`http://localhost:3001/api/v1/events/${event_id}`);
+      setPhotos(eventsResponse.data.event_pictures || []);
+  
+      // Limpia los campos
+      setSelectedFile(null);
+      setDescription('');
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+    }
   };
 
   const handleTagUser = (user) => {
@@ -101,7 +98,7 @@ const EventGallery = () => {
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          style={{ display: 'none' }}
+          style={{ display: 'none' }} // Hide default file input
           id="file-upload"
         />
         <label htmlFor="file-upload">
@@ -172,7 +169,9 @@ const EventGallery = () => {
             mt: 2,
             backgroundColor: '#1e88e5',
             color: 'white',
-            '&:hover': { backgroundColor: '#1565c0' },
+            '&:hover': {
+              backgroundColor: '#1565c0',
+            },
           }}
           onClick={handlePhotoUpload}
           disabled={!selectedFile || !description}
@@ -186,7 +185,11 @@ const EventGallery = () => {
           <Grid item xs={12} sm={6} md={4} key={photo?.id || Math.random()}>
             <Card sx={{ backgroundColor: '#444' }}>
               <Typography variant="h5" sx={{ p: 1, color: 'white' }}>
-                {photo?.user_handle || 'Anon'}
+                {photo?.user_handle ? (
+                  <a href={`/users/${photo.user_id}`} style={{ color: 'white', textDecoration: 'underline' }}>
+                    {photo.user_handle}
+                  </a>
+                ) : 'Anon'}
               </Typography>
               <Typography variant="body2" sx={{ p: 1, color: 'white' }}>
                 {photo?.description || ''}
