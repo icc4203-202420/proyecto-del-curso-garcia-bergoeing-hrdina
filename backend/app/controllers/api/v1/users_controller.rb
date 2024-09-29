@@ -11,19 +11,25 @@ class API::V1::UsersController < ApplicationController
       # Get all event IDs the user is attending
       event_ids = params[:event_id].present? ? [params[:event_id].to_i] : user.events.pluck(:id)
       
-      # Only perform the query if the user is attending any events
-      if event_ids.any?
-        # Join events to get all users attending the same events, excluding the current user
+      # Get all bar IDs the user is registered to (attending events at those bars)
+      bar_ids = user.events.pluck(:bar_id)
+      
+      # Only perform the query if the user is attending any events and registered to any bars
+      if event_ids.any? && bar_ids.any?
+        # Join events and bars to get all users attending the same events at the bars the current user is attending
         @users = User.joins(events: :bar)  # Join events and bars
-                    .where(events: { id: event_ids })  # Get all users attending the same events
                     .where.not(id: user.id)  # Exclude the current user
+                    .where(events: { id: event_ids })  # Filter by events the current user is attending
+                    .where(bars: { id: bar_ids })  # Filter by bars the current user is registered to
                     .includes(:friendships)  # Eager load friendships
 
         # Build the response, adding friendship status and event details
         users_with_friend_status = @users.map do |u|
-          event_info = u.events.map do |event|
+          event_info = u.events.where(bar_id: bar_ids).map do |event|  # Filter only events at bars the user is registered to
             {
+              event_id: event.id,
               event_name: event.name,
+              bar_id: event.bar_id,
               bar_name: event.bar.name
             }
           end
@@ -36,7 +42,7 @@ class API::V1::UsersController < ApplicationController
 
         render json: users_with_friend_status, status: :ok
       else
-        render json: [], status: :ok  # Return an empty array if the user is not attending any events
+        render json: [], status: :ok  # Return an empty array if the user is not attending any events or registered to any bars
       end
     else
       render json: { error: 'User ID not provided' }, status: :bad_request

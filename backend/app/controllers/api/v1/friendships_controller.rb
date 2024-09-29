@@ -20,7 +20,7 @@ class API::V1::FriendshipsController < ApplicationController
       return
     end
   
-    @friendship = Friendship.new(user_id: @user.id, friend_id: friend.id, bar_id: nil) # Explicitly set bar_id to nil
+    @friendship = Friendship.new(user_id: @user.id, friend_id: friend.id, bar_id: params[:bar_id], event_id: params[:event_id])
   
     if @friendship.save
       render json: { message: "Friendship created successfully." }, status: :created
