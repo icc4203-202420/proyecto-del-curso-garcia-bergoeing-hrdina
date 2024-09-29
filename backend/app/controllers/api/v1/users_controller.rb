@@ -5,8 +5,42 @@ class API::V1::UsersController < ApplicationController
   
   # GET /users
   def index
-    @users = User.includes(:reviews, :address).all  
-    render json: @users, status: :ok 
+    if params[:user_id]
+      user = User.find(params[:user_id].to_i)
+      
+      # Get all event IDs the user is attending
+      event_ids = user.events.pluck(:id)
+      
+      # Only perform the query if the user is attending any events
+      if event_ids.any?
+        # Join events to get all users attending the same events, excluding the current user
+        @users = User.joins(events: :bar)  # Join events and bars
+                    .where(events: { id: event_ids })  # Get all users attending the same events
+                    .where.not(id: user.id)  # Exclude the current user
+                    .includes(:friendships)  # Eager load friendships
+
+        # Build the response, adding friendship status and event details
+        users_with_friend_status = @users.map do |u|
+          event_info = u.events.map do |event|
+            {
+              event_name: event.name,
+              bar_name: event.bar.name
+            }
+          end
+
+          u.as_json.merge(
+            is_friend: u.friendships.exists?(friend_id: user.id),
+            events: event_info
+          )
+        end
+
+        render json: users_with_friend_status, status: :ok
+      else
+        render json: [], status: :ok  # Return an empty array if the user is not attending any events
+      end
+    else
+      render json: { error: 'User ID not provided' }, status: :bad_request
+    end
   end
 
   # GET /users/:id

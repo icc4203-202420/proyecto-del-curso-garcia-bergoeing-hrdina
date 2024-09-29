@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import { Container, Typography, Grid, Button, Card, CardMedia, TextField, Box } from '@mui/material';
 
 const EventGallery = () => {
@@ -33,7 +34,7 @@ const EventGallery = () => {
     setDescription(event.target.value);
   };
 
-  const handlePhotoUpload = () => {
+  const handlePhotoUpload = async() => {
     if (!selectedFile) return;
 
     const formData = new FormData();
@@ -54,6 +55,9 @@ const EventGallery = () => {
       .catch((error) => {
         console.error('Error uploading photo:', error);
       });
+
+    const eventsResponse = await axios.get(`http://localhost:3001/api/v1/events/${event_id}`)
+    setPhotos(eventsResponse.data.event_pictures || [])
   };
 
   return (

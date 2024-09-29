@@ -1,6 +1,6 @@
 class API::V1::EventPicturesController < ApplicationController
   include ImageProcessing
-  before_action :set_event, only: [:create, :index]
+  before_action :set_event, only: [:create]
 
   def create
     @event_picture = @event.event_pictures.new(event_picture_params)
