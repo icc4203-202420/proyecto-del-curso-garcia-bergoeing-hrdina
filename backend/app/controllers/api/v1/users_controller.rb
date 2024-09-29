@@ -9,7 +9,7 @@ class API::V1::UsersController < ApplicationController
       user = User.find(params[:user_id].to_i)
       
       # Get all event IDs the user is attending
-      event_ids = user.events.pluck(:id)
+      event_ids = params[:event_id].present? ? [params[:event_id].to_i] : user.events.pluck(:id)
       
       # Only perform the query if the user is attending any events
       if event_ids.any?

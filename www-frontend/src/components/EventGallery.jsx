@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Container, Typography, Grid, Button, Card, CardMedia, TextField, Box } from '@mui/material';
+import { Container, Typography, Grid, Button, Card, CardMedia, TextField, Box, Autocomplete } from '@mui/material';
 
 const EventGallery = () => {
   const { event_id } = useParams(); // Get event ID from URL
   const [photos, setPhotos] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState(''); // New state for description
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
   const user_id = localStorage.getItem("user_id");
 
   useEffect(() => {
@@ -24,6 +26,24 @@ const EventGallery = () => {
         console.error('Error fetching photos:', error);
         setPhotos([]); // In case of an error, set photos to an empty array
       });
+
+    // Fetch users for tagging
+    const fetchUsers = async () => {
+      setLoadingUsers(true);
+      try {
+        const response = await axios.get(`http://localhost:3001/api/v1/users`, {
+          params: { user_id: user_id, event_id: event_id }
+        });
+
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        setUsers([]);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+    fetchUsers();
   }, [event_id]);
 
   const handleFileChange = (event) => {
@@ -60,6 +80,16 @@ const EventGallery = () => {
     setPhotos(eventsResponse.data.event_pictures || [])
   };
 
+  const handleTagUser = (user) => {
+    // Insert tagged user into the description at the current cursor position
+    const input = document.getElementById("description-input");
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+
+    const newDescription = description.substring(0, start) + `@${user.handle} ` + description.substring(end);
+    setDescription(newDescription);
+  };
+
   return (
     <Container sx={{ backgroundColor: '#222', padding: 3 }}>
       <Typography variant="h4" sx={{ color: 'white' }}>Photo Gallery</Typography>
@@ -71,7 +101,7 @@ const EventGallery = () => {
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          style={{ display: 'none' }} // Hide default file input
+          style={{ display: 'none' }}
           id="file-upload"
         />
         <label htmlFor="file-upload">
@@ -81,7 +111,39 @@ const EventGallery = () => {
         </label>
         {selectedFile && <Typography sx={{ color: 'white', mt: 1 }}>{selectedFile.name}</Typography>}
 
+        <Autocomplete
+          options={users}
+          getOptionLabel={(option) => option.handle || ''}
+          loading={loadingUsers}
+          onChange={(event, newValue) => {
+            if (newValue) handleTagUser(newValue);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Tag a user (start with @)"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              sx={{
+                mt: 2,
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: 'white' },
+                  '&:hover fieldset': { borderColor: 'white' },
+                  '&.Mui-focused fieldset': { borderColor: 'blue' },
+                  '& input': { color: 'white' },
+                },
+                '& .MuiInputBase-input': { color: 'white' },
+                '& .MuiInputLabel-root': { color: 'white' },
+                '& .MuiInputLabel-root.Mui-focused': { color: 'white' },
+                backgroundColor: '#333',
+              }}
+            />
+          )}
+        />
+
         <TextField
+          id="description-input"
           fullWidth
           label="Description"
           variant="outlined"
@@ -90,28 +152,14 @@ const EventGallery = () => {
           sx={{
             mt: 2,
             '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: 'white',
-              },
-              '&:hover fieldset': {
-                borderColor: 'white',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: 'blue',
-              },
-              '& input': {
-                color: 'white',
-              },
+              '& fieldset': { borderColor: 'white' },
+              '&:hover fieldset': { borderColor: 'white' },
+              '&.Mui-focused fieldset': { borderColor: 'blue' },
+              '& input': { color: 'white' },
             },
-            '& .MuiInputBase-input': {
-              color: 'white',
-            },
-            '& .MuiInputLabel-root': {
-              color: 'white',
-            },
-            '& .MuiInputLabel-root.Mui-focused': {
-              color: 'white',
-            },
+            '& .MuiInputBase-input': { color: 'white' },
+            '& .MuiInputLabel-root': { color: 'white' },
+            '& .MuiInputLabel-root.Mui-focused': { color: 'white' },
             backgroundColor: '#333',
           }}
           multiline
@@ -124,9 +172,7 @@ const EventGallery = () => {
             mt: 2,
             backgroundColor: '#1e88e5',
             color: 'white',
-            '&:hover': {
-              backgroundColor: '#1565c0',
-            },
+            '&:hover': { backgroundColor: '#1565c0' },
           }}
           onClick={handlePhotoUpload}
           disabled={!selectedFile || !description}
@@ -145,11 +191,11 @@ const EventGallery = () => {
               <Typography variant="body2" sx={{ p: 1, color: 'white' }}>
                 {photo?.description || ''}
               </Typography>
-              {photo?.image_url ? ( // Assuming the API returns an image_url field
+              {photo?.image_url ? (
                 <CardMedia
                   component="img"
                   height="200"
-                  image={photo.image_url} // Use the correct field for image URL
+                  image={photo.image_url}
                   alt={`Photo ${photo?.id || 'N/A'}`}
                 />
               ) : (
