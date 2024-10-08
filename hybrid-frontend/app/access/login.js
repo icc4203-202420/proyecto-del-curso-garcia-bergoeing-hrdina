@@ -19,21 +19,21 @@ const initialValues = {
 const LoginForm = ({ tokenHandler }) => {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation(); // Hook para manejar la navegación
+  const NGROK_URL = 'https://d70c-201-214-199-116.ngrok-free.app/api/v1/login' //Adjust when restarting server
 
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/v1/login', qs.stringify({ user: values }), {
+      const response = await axios.post(`${NGROK_URL}/api/v1/login`, qs.stringify({ user: values }), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
-
-      // Extraer el token de la respuesta
+  
       const receivedToken = response.headers.authorization.split(' ')[1];
-
+  
       if (receivedToken) {
         tokenHandler(receivedToken);
         Alert.alert('Login exitoso');
-        navigation.navigate('Map'); // Redirigir a la pantalla de mapa
+        navigation.navigate('Map');
       } else {
         Alert.alert('Error', 'No se recibió token. Por favor, intente de nuevo.');
       }
