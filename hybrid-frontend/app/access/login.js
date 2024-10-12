@@ -1,3 +1,4 @@
+//import { NGROK_URL } from '@env';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Formik } from 'formik';
@@ -5,6 +6,7 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import qs from 'qs';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Email no válido').required('El email es requerido'),
@@ -16,24 +18,24 @@ const initialValues = {
   password: '',
 };
 
-const LoginForm = ({ tokenHandler }) => {
+const LoginForm = () => {
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation(); // Hook para manejar la navegación
-  const NGROK_URL = 'https://d70c-201-214-199-116.ngrok-free.app/api/v1/login' //Adjust when restarting server
+  const navigation = useNavigation();
 
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
-      const response = await axios.post(`${NGROK_URL}/api/v1/login`, qs.stringify({ user: values }), {
+      const response = await axios.post(`https://886e-201-214-199-116.ngrok-free.app/api/v1/login`, qs.stringify({ user: values }), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
   
       const receivedToken = response.headers.authorization.split(' ')[1];
   
       if (receivedToken) {
-        tokenHandler(receivedToken);
+        // Store the token in AsyncStorage
+        await AsyncStorage.setItem('authToken', receivedToken);
         Alert.alert('Login exitoso');
-        navigation.navigate('Map');
+        navigation.navigate('Home');
       } else {
         Alert.alert('Error', 'No se recibió token. Por favor, intente de nuevo.');
       }
