@@ -1,4 +1,4 @@
-//import { NGROK_URL } from '@env';
+import { NGROK_URL } from '@env';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Formik } from 'formik';
@@ -25,7 +25,7 @@ const LoginForm = () => {
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
-      const response = await axios.post(`https://886e-201-214-199-116.ngrok-free.app/api/v1/login`, qs.stringify({ user: values }), {
+      const response = await axios.post(`${NGROK_URL}/api/v1/login`, qs.stringify({ user: values }), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
   
