@@ -3,10 +3,16 @@ import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+//Icons
+import {Ionicons} from '@expo/vector-icons'
+
+//Paths
 import Login from './access/login';
 import SignUp from './access/SignUp';
 import Home from './home';
 import BeerList from './beers/beers.js'
+import BeerDetails from './beers/beerDetails.js'
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -20,7 +26,9 @@ const AppTabs = () => (
         tabBarStyle: { backgroundColor: '#fff' }, // Style for the tab bar
       }}
     >
-    <Tab.Screen name="Beers" component={BeerList} />
+    <Tab.Screen name="Beers" component={BeerList} options={{tabBarIcon: ({color, size}) => (
+      <Ionicons name="beer" color={color} size={size} />
+    ),}}/>
   </Tab.Navigator>
 );
 
@@ -30,6 +38,7 @@ const App = () => {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Screen name="BeerDetails" component={BeerDetails} />
         <Stack.Screen
           name="Main"
           component={AppTabs}
