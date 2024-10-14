@@ -1,49 +1,53 @@
 import 'react-native-gesture-handler'; // Place this at the very top
-import React, { useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
-//Icons
-import {Ionicons} from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwtDecode from 'jwt-decode';
 
 //Paths
 import Login from './access/login';
 import SignUp from './access/SignUp';
-import Home from './home';
-import BeerList from './beers/beers.js'
 import BeerDetails from './beers/beerDetails.js'
+import BeerReviews from './beers/beerReviews.js'
+import AppTabs from './components/appTab.js'
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
-
-const AppTabs = () => (
-  <Tab.Navigator
-      screenOptions={{
-        headerShown: false, // Hide headers for individual tabs
-        tabBarActiveTintColor: '#6200ee',
-        tabBarInactiveTintColor: '#000',
-        tabBarStyle: { backgroundColor: '#fff' }, // Style for the tab bar
-      }}
-    >
-    <Tab.Screen name="Beers" component={BeerList} options={{tabBarIcon: ({color, size}) => (
-      <Ionicons name="beer" color={color} size={size} />
-    ),}}/>
-  </Tab.Navigator>
-);
 
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await AsyncStorage.getItem('authToken');
+      if (token) {
+        setIsAuthenticated(true);
+        const decodedToken = jwtDecode(token);
+        await AsyncStorage.setItem('user_id', decodedToken.sub.toString());
+      }
+    };
+    checkAuth();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('user_id');
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Error removing token:', error);
+    }
+  };
+  
   return (
-      <Stack.Navigator initialRouteName="Login">
+    <Stack.Navigator initialRouteName="Login">
+      <>
         <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Screen name="Main" component={AppTabs} />
         <Stack.Screen name="BeerDetails" component={BeerDetails} />
-        <Stack.Screen
-          name="Main"
-          component={AppTabs}
-        />
-      </Stack.Navigator>
+        <Stack.Screen name="BeerReviews" component={BeerReviews} />
+      </>
+  </Stack.Navigator>
   );
 };
 

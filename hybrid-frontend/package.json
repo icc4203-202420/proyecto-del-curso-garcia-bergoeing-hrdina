@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@miblanchard/react-native-slider": "^2.6.0",
     "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/native": "^6.1.18",
@@ -22,6 +23,7 @@
     "expo-status-bar": "~1.12.1",
     "formik": "^2.4.6",
     "ionicons": "^7.4.0",
+    "jwt-decode": "^4.0.0",
     "qs": "^6.13.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

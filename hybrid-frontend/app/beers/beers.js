@@ -42,7 +42,7 @@ const BeerList = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('ReviewForm', { beerId: item.id })}
+          onPress={() => navigation.navigate('BeerReviews', { beerId: item.id })}
         >
           <Text style={styles.buttonText}>Write Review</Text>
         </TouchableOpacity>
