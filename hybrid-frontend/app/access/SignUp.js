@@ -54,7 +54,7 @@ const SignUp = () => {
       if (receivedToken) {
         await AsyncStorage.setItem('authToken', receivedToken);
         Alert.alert('Registro exitoso');
-        navigation.navigate('Home');
+        navigation.navigate('Main');
       } else {
         Alert.alert('Error', 'No se recibió token. Por favor, intente de nuevo.');
       }

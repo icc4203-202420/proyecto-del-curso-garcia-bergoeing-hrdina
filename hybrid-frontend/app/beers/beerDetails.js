@@ -34,7 +34,7 @@ const BeerDetails = () => {
   }, [beerId]);
 
   const handleReviewClick = () => {
-    navigation.navigate('Review', { beerId });
+    navigation.navigate('BeerReviews', { beerId });
   };
 
   // Calculate indices for pagination
