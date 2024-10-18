@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView, ActivityIndicator, Button } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
-import { Card, Title, Paragraph, Divider } from 'react-native-paper';
-import { Pagination } from 'react-native-paper';
+import { Card, Title, Paragraph } from 'react-native-paper';
 
 const BeerDetails = () => {
   const route = useRoute();
@@ -22,14 +21,20 @@ const BeerDetails = () => {
       try {
         const response = await axios.get(`${NGROK_URL}/api/v1/beers/${beerId}`);
         setBeer(response.data.beer);
-        setReviews(response.data.beer.reviews || []);
+        console.error("Beer stats:", response.data);
+
+        // Verifica si las reviews son strings y conviértelas a objeto si es necesario
+        const reviews = response.data.beer.reviews.map(review =>
+          typeof review === 'string' ? JSON.parse(review) : review
+        );
+        console.error("reviews:", reviews);
+        setReviews(reviews || []);
         setLoadingBeer(false);
       } catch (err) {
         setBeerError('Error loading beer details.');
         setLoadingBeer(false);
       }
     };
-
     fetchBeer();
   }, [beerId]);
 
@@ -37,18 +42,22 @@ const BeerDetails = () => {
     navigation.navigate('BeerReviews', { beerId });
   };
 
-  // Calculate indices for pagination
+  // Calcular índices para la paginación
   const indexOfLastReview = page * reviewsPerPage;
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
   const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
+  const handleNextPage = () => {
+    setPage((prevPage) => Math.min(prevPage + 1, Math.ceil(reviews.length / reviewsPerPage)));
+  };
+
+  const handlePrevPage = () => {
+    setPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16 }}>
-      {/* Display Beer Details */}
+      {/* Mostrar detalles de la cerveza */}
       {loadingBeer ? (
         <ActivityIndicator size="large" color="#6200ee" />
       ) : beerError ? (
@@ -78,7 +87,7 @@ const BeerDetails = () => {
         <Text>No beer details found.</Text>
       )}
 
-      {/* Display Reviews */}
+      {/* Mostrar reseñas */}
       <View style={{ marginTop: 16 }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>Reviews</Text>
         {loadingBeer ? (
@@ -94,12 +103,18 @@ const BeerDetails = () => {
                 </Card.Content>
               </Card>
             ))}
-            {/* Pagination Component */}
-            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 16 }}>
-              <Pagination
-                page={page}
-                numberOfPages={Math.ceil(reviews.length / reviewsPerPage)}
-                onPageChange={handlePageChange}
+            {/* Paginación Manual */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 }}>
+              <Button
+                title="Previous"
+                onPress={handlePrevPage}
+                disabled={page === 1}
+              />
+              <Text>Page {page} of {Math.ceil(reviews.length / reviewsPerPage)}</Text>
+              <Button
+                title="Next"
+                onPress={handleNextPage}
+                disabled={page === Math.ceil(reviews.length / reviewsPerPage)}
               />
             </View>
           </View>
