@@ -31,7 +31,6 @@ const BeerReviews = () => {
     const userId = await AsyncStorage.getItem('user_id');
     values.user_id = userId;
     values.rating = rating;
-    console.error('Submitted values:', values);
 
     try {
       const response = await axios.post(

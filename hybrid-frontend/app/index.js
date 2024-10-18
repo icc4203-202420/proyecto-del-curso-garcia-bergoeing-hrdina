@@ -2,7 +2,6 @@ import 'react-native-gesture-handler'; // Place this at the very top
 import React, { useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import jwtDecode from 'jwt-decode';
 
 //Paths
 import Login from './access/login';

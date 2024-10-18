@@ -38,7 +38,6 @@ const LoginForm = () => {
 
         const decodedToken = jwtDecode(receivedToken);
         await AsyncStorage.setItem('user_id', decodedToken.sub.toString());
-        console.error(receivedToken, decodedToken)
 
         navigation.navigate('Main');
       } else {
