@@ -21,8 +21,6 @@ const App = () => {
       const token = await AsyncStorage.getItem('authToken');
       if (token) {
         setIsAuthenticated(true);
-        const decodedToken = jwtDecode(token);
-        await AsyncStorage.setItem('user_id', decodedToken.sub.toString());
       }
     };
     checkAuth();

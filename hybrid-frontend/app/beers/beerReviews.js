@@ -31,6 +31,7 @@ const BeerReviews = () => {
     const userId = await AsyncStorage.getItem('user_id');
     values.user_id = userId;
     values.rating = rating;
+    console.error('Submitted values:', values);
 
     try {
       const response = await axios.post(
@@ -44,7 +45,7 @@ const BeerReviews = () => {
         }
       );
       setServerError('');
-      navigation.navigate('Home'); // Redirect to the home screen after a successful submission
+      navigation.navigate('Main'); // Redirect to the home screen after a successful submission
     } catch (err) {
       console.log('Error:', err);
       if (err.response && err.response.status === 401) {

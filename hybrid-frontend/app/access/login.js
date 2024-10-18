@@ -7,6 +7,7 @@ import axios from 'axios';
 import qs from 'qs';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import {jwtDecode} from 'jwt-decode';
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Email no válido').required('El email es requerido'),
@@ -34,6 +35,11 @@ const LoginForm = () => {
       if (receivedToken) {
         // Store the token in AsyncStorage
         await AsyncStorage.setItem('authToken', receivedToken);
+
+        const decodedToken = jwtDecode(receivedToken);
+        await AsyncStorage.setItem('user_id', decodedToken.sub.toString());
+        console.error(receivedToken, decodedToken)
+
         navigation.navigate('Main');
       } else {
         Alert.alert('Error', 'No se recibió token. Por favor, intente de nuevo.');
