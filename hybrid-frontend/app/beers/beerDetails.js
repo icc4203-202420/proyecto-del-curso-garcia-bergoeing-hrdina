@@ -21,13 +21,11 @@ const BeerDetails = () => {
       try {
         const response = await axios.get(`${NGROK_URL}/api/v1/beers/${beerId}`);
         setBeer(response.data.beer);
-        console.error("Beer stats:", response.data);
 
         // Verifica si las reviews son strings y conviértelas a objeto si es necesario
         const reviews = response.data.beer.reviews.map(review =>
           typeof review === 'string' ? JSON.parse(review) : review
         );
-        console.error("reviews:", reviews);
         setReviews(reviews || []);
         setLoadingBeer(false);
       } catch (err) {

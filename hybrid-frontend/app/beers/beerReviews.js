@@ -1,12 +1,12 @@
 import { NGROK_URL } from '@env';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { Slider } from '@miblanchard/react-native-slider';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import StarRating from 'react-native-star-rating-widget';
 
 // Validation schema for the form
 const validationSchema = Yup.object().shape({
@@ -30,10 +30,10 @@ const BeerReviews = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     const userId = await AsyncStorage.getItem('user_id');
     values.user_id = userId;
-    values.rating = rating;
+    values.rating = parseInt(rating);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${NGROK_URL}/api/v1/beers/${beerId}/reviews`,
         { review: values },
         {
@@ -81,14 +81,12 @@ const BeerReviews = () => {
             )}
 
             <Text style={styles.label}>Calificación</Text>
-            <Slider
-              value={rating}
-              onValueChange={setRating}
-              minimumValue={1}
-              maximumValue={5}
-              step={1}
-              trackStyle={styles.sliderTrack}
-              thumbStyle={styles.sliderThumb}
+            <StarRating
+              rating={rating}
+              onChange={setRating}
+              starSize={30}
+              color="purple"
+              maxStars={5}
             />
 
             <View style={styles.buttonContainer}>
@@ -138,13 +136,6 @@ const styles = StyleSheet.create({
   label: {
     color: 'white',
     marginBottom: 5
-  },
-  sliderTrack: {
-    height: 10,
-    backgroundColor: 'purple'
-  },
-  sliderThumb: {
-    backgroundColor: 'purple'
   },
   buttonContainer: {
     marginTop: 20
