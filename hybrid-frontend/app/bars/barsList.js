@@ -10,7 +10,7 @@ const BarList = () => {
 
   useEffect(() => {
     // Fetching bars from the API
-    fetch('${NGROK_URL}/api/v1/bars')
+    fetch(`${NGROK_URL}/api/v1/bars`)
       .then(response => response.json())
       .then(data => setBars(data.bars))
       .catch(error => console.error('Error fetching bars:', error));
@@ -22,7 +22,7 @@ const BarList = () => {
   );
 
   const handleViewEvents = (barId) => {
-    navigation.navigate('BarEvents', { id: barId }); // Navigate to the events screen
+    navigation.navigate(`BarEvents`, { id: barId }); // Navigate to the events screen
   };
 
   if (!bars.length) {
