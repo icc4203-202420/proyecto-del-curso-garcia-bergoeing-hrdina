@@ -9,6 +9,7 @@ import SignUp from './access/SignUp';
 import BeerDetails from './beers/beerDetails.js'
 import BeerReviews from './beers/beerReviews.js'
 import AppTabs from './components/appTab.js'
+import BarEvents from './bars/barEvents.js';
 
 const Stack = createStackNavigator();
 
@@ -43,6 +44,7 @@ const App = () => {
         <Stack.Screen name="Main" component={AppTabs} />
         <Stack.Screen name="BeerDetails" component={BeerDetails} />
         <Stack.Screen name="BeerReviews" component={BeerReviews} />
+        <Stack.Screen name="BarEvents" component={BarEvents} />
       </>
   </Stack.Navigator>
   );
