@@ -8,7 +8,7 @@ const AddCheckIn = ({ bar_id, event_id, onCheckIn }) => {
     const [hasCheckedIn, setHasCheckedIn] = useState(false);
     const [error, setError] = useState('');
     // Retrieve user_id from localStorage
-   const userId = parseInt(localStorage.getItem("user_id"), 10);  // Ensures it's an integer
+    const userId = parseInt(localStorage.getItem("user_id"), 10);  // Ensures it's an integer
 
     const handleCheckIn = async () => {
         setIsCheckingIn(true);
