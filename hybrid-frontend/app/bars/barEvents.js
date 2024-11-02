@@ -1,6 +1,7 @@
 import { NGROK_URL } from '@env';
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { registerForPushNotificationsAsync } from "../../util/Notifications";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -32,18 +33,18 @@ const BarEvents = () => {
   const handleCheckIn = async (event_id) => {
     setCheckingIn(event_id);  // Mostrar el estado de carga para este evento
     const token = await AsyncStorage.getItem('authToken');  // Obtener token del almacenamiento
+    const userId = parseInt(await AsyncStorage.getItem("user_id"), 10);
+    const pushToken = await registerForPushNotificationsAsync();
 
     if (!token) {
       setError('Authentication token not found.');
       return;
     }
 
-    const userId = parseInt(await AsyncStorage.getItem("user_id"), 10);
-
     try {
       const response = await axios.post(
         `${NGROK_URL}/api/v1/bars/${barId}/events/${event_id}/attendances`,
-        { user_id: userId },
+        { user_id: userId,  push_token: pushToken},
         {
           headers: {
             Authorization: `Bearer ${token}`,

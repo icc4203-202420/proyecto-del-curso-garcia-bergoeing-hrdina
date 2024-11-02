@@ -25,6 +25,12 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "174ab4a1-bbaf-437a-b88e-5b26d0d537f3"
+      }
+    },
+    "owner": "gabrielbergoeing"
   }
 }

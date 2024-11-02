@@ -7,8 +7,6 @@ import { NGROK_URL } from '@env';
 
 const UserHome = () => {
   const [userName, setUserName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
 
   // Fetch the user's name (you can replace this with an actual API call if needed)
   useEffect(() => {
@@ -25,34 +23,6 @@ const UserHome = () => {
 
     fetchUserName();
   }, []);
-
-  const handleLogout = async () => {
-    setLoading(true);
-    try {
-      const token = await AsyncStorage.getItem('authToken');
-
-      await axios.delete(`${NGROK_URL}/api/v1/logout`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      // Clear the stored user data after a successful logout
-      await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('user_id');
-      await AsyncStorage.removeItem('user_name');
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
-    } catch (error) {
-      console.error('Error logging out:', error);
-      Alert.alert('Error', 'Error logging out. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <View style={styles.container}>

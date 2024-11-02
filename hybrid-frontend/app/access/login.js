@@ -5,9 +5,9 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import qs from 'qs';
+import {jwtDecode} from 'jwt-decode';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
-import {jwtDecode} from 'jwt-decode';
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Email no válido').required('El email es requerido'),
