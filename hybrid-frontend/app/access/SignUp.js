@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import qs from 'qs'; // Asegúrate de tener esta librería instalada
+import { registerForPushNotificationsAsync } from "../../util/Notifications";
 
 // Esquema de validación con Yup
 const validationSchema = Yup.object({
@@ -37,10 +38,18 @@ const SignUp = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     setLoading(true);
     try {
+
+      const pushToken = await registerForPushNotificationsAsync();
+      // Include the push token in the values object
+      const updatedValues = {
+        ...values,
+        push_token: pushToken,
+      };
+
       const response = await axios.post(
         `${NGROK_URL}/api/v1/signup`,
         qs.stringify({
-          user: values // Anida los valores bajo la clave 'user'
+          user: updatedValues // Anida los valores bajo la clave 'user'
         }),
         {
           headers: {
@@ -52,9 +61,8 @@ const SignUp = () => {
       const receivedToken = response.headers.authorization.split(' ')[1];
 
       if (receivedToken) {
-        await AsyncStorage.setItem('authToken', receivedToken);
         Alert.alert('Registro exitoso');
-        navigation.navigate('Main');
+        navigation.navigate('Login');
       } else {
         Alert.alert('Error', 'No se recibió token. Por favor, intente de nuevo.');
       }

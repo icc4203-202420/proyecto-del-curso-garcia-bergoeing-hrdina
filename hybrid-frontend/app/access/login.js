@@ -8,6 +8,7 @@ import qs from 'qs';
 import {jwtDecode} from 'jwt-decode';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import { registerForPushNotificationsAsync } from "../../util/Notifications";
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Email no válido').required('El email es requerido'),
@@ -24,6 +25,14 @@ const LoginForm = () => {
   const navigation = useNavigation();
 
   const handleSubmit = async (values) => {
+
+    const pushToken = await registerForPushNotificationsAsync();
+    // Include the push token in the values object
+    const updatedValues = {
+      ...values,
+      push_token: pushToken,
+    };
+
     setLoading(true);
     try {
       const response = await axios.post(`${NGROK_URL}/api/v1/login`, qs.stringify({ user: values }), {
