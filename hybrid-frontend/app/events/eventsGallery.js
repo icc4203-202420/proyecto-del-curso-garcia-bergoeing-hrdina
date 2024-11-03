@@ -2,7 +2,6 @@ import { NGROK_URL } from '@env';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Image, TextInput, ScrollView, Alert, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EventGallery = ({ route }) => {
@@ -10,7 +9,6 @@ const EventGallery = ({ route }) => {
   const [photos, setPhotos] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState('');
-  
 
   useEffect(() => {
     fetchEventPhotos();
@@ -18,80 +16,86 @@ const EventGallery = ({ route }) => {
 
   const fetchEventPhotos = async () => {
     try {
-      console.error(event_id)
-      const response = await axios.get(`${NGROK_URL}/api/v1/events/${event_id}`);
-      setPhotos(response.data.event_pictures || []);
+      const response = await fetch(`${NGROK_URL}/api/v1/events/${event_id}`);
+      const data = await response.json();
+      setPhotos(data.event_pictures || []);
     } catch (error) {
       console.error('Error fetching photos:', error);
       setPhotos([]);
     }
   };
-  
+
   const handlePhotoUpload = async () => {
     try {
       const user_id = await AsyncStorage.getItem("user_id");
+  
       if (!selectedFile || !selectedFile.uri || !description) {
         Alert.alert("Please select an image and add a description.");
         return;
       }
-
-      const imageUri = selectedFile.uri.startsWith("file://")
-        ? selectedFile.uri
-        : `file://${selectedFile.uri}`;
-
+  
       const formData = new FormData();
       formData.append('event_picture[image]', {
-        uri: imageUri,
+        uri: selectedFile.uri,
         name: selectedFile.uri.split('/').pop(),
-        type: selectedFile.type || 'image/jpeg',
+        type: 'image/jpeg',
       });
       formData.append('event_picture[description]', description);
-      
-      await axios.post(`${NGROK_URL}/api/v1/events/${event_id}/event_pictures/${user_id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+  
+      const response = await fetch(`${NGROK_URL}/api/v1/events/${event_id}/event_pictures/${user_id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'application/json',
+        },
+        body: formData,
       });
-      
-      fetchEventPhotos();  // Refresh photos
-      setSelectedFile(null);
-      setDescription('');
+  
+      if (response.ok) {
+        fetchEventPhotos();  // Refresh photos
+        setSelectedFile(null);
+        setDescription('');
+      } else {
+        const errorData = await response.text();
+        console.error('Failed to upload photo:', errorData);
+      }
     } catch (error) {
       console.error('Error uploading photo:', error);
     }
   };
+  
 
   const handleImageSelection = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  
+
     if (permissionResult.granted === false) {
       Alert.alert('Permission to access gallery is required!');
       return;
     }
-  
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
     });
-  
-    console.error("Image Picker Result: ", result);
-  
+
     if (!result.canceled) {
-      setSelectedFile(result.assets ? result.assets[0] : result); // Cambia esto si `assets` está presente
+      setSelectedFile(result.assets ? result.assets[0] : result); // Adjust if `assets` is present
     }
   };
-  
+
   const handleTakePhoto = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-  
+
     if (permissionResult.granted === false) {
       Alert.alert('Permission to access camera is required!');
       return;
     }
-  
+
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
     });
-  
+
     if (!result.cancelled) {
       setSelectedFile(result);
     }
