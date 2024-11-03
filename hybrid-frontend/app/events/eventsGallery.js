@@ -30,9 +30,6 @@ const EventGallery = ({ route }) => {
   const handlePhotoUpload = async () => {
     try {
       const user_id = await AsyncStorage.getItem("user_id");
-      console.error("Selected File: ", selectedFile)
-      console.error("Selected File Uri: ", selectedFile.uri)
-      console.error("Description: ", description)
       if (!selectedFile || !selectedFile.uri || !description) {
         Alert.alert("Please select an image and add a description.");
         return;
