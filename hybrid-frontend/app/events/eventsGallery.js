@@ -85,21 +85,26 @@ const EventGallery = ({ route }) => {
 
   const handleTakePhoto = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-
+  
     if (permissionResult.granted === false) {
       Alert.alert('Permission to access camera is required!');
       return;
     }
-
+  
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
     });
-
-    if (!result.cancelled) {
-      setSelectedFile(result);
+  
+    if (!result.canceled) {
+      // Accede a la imagen en result.assets si assets está presente
+      const photo = result.assets ? result.assets[0] : result;
+      setSelectedFile(photo);
+    } else {
+      console.error("Photo capture was cancelled.");
     }
   };
+  
 
   return (
     <ScrollView style={styles.container}>
