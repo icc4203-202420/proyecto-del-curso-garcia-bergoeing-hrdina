@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Alert, StyleSheet, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
-import { NGROK_URL } from '@env';
 
 const UserHome = () => {
   const [userName, setUserName] = useState('');
+  const [loading, setLoading] = useState(false); // Added loading state
+  const navigation = useNavigation();
 
   // Fetch the user's name (you can replace this with an actual API call if needed)
   useEffect(() => {
     const fetchUserName = async () => {
+      setLoading(true); // Start loading
       try {
         const storedName = await AsyncStorage.getItem('user_name'); // Assuming the user's name is stored under 'user_name'
         if (storedName) {
@@ -18,11 +19,26 @@ const UserHome = () => {
         }
       } catch (error) {
         console.error('Error fetching user name:', error);
+      } finally {
+        setLoading(false); // End loading
       }
     };
 
     fetchUserName();
   }, []);
+
+  const handleLogout = async () => {
+    setLoading(true); // Start loading
+    try {
+      await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('user_id');
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Error removing token:', error);
+    } finally {
+      setLoading(false); // End loading
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -38,7 +54,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF'
+    backgroundColor: '#F5FCFF',
   },
   welcomeText: {
     fontSize: 20,

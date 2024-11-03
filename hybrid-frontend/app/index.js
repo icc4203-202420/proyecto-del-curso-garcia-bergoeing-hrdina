@@ -34,16 +34,6 @@ const App = () => {
     checkAuth();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('user_id');
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error('Error removing token:', error);
-    }
-  };
-
   return (
     <NavigationContainer ref={navigationRef} independent={true} linking={linking}>
     <Stack.Navigator initialRouteName="Login">
