@@ -11,6 +11,7 @@ import BeerReviews from './beers/beerReviews.js'
 import AppTabs from './components/appTab.js'
 import BarEvents from './bars/barEvents.js';
 import AttendancesList from './events/attendancesList.js';
+import EventsGallery from './events/eventsGallery.js';
 
 const Stack = createStackNavigator();
 
@@ -47,6 +48,7 @@ const App = () => {
         <Stack.Screen name="BeerReviews" component={BeerReviews} />
         <Stack.Screen name="BarEvents" component={BarEvents} />
         <Stack.Screen name="AttendancesList" component={AttendancesList} />
+        <Stack.Screen name="EventsGallery" component={EventsGallery} />
       </>
   </Stack.Navigator>
   );

@@ -30,6 +30,10 @@ const BarEvents = () => {
     navigation.navigate('AttendancesList', { event_id });
   };
 
+  const handleViewPhotos = (event_id) => {
+    navigation.navigate('EventsGallery', { event_id });
+  };
+
   const handleCheckIn = async (event_id) => {
     setCheckingIn(event_id);  // Mostrar el estado de carga para este evento
     const token = await AsyncStorage.getItem('authToken');  // Obtener token del almacenamiento
@@ -102,6 +106,13 @@ const BarEvents = () => {
                     ) : (
                       <Text style={styles.buttonText}>Check In</Text>
                     )}
+                  </TouchableOpacity>
+                  {/* Botón de ver fotos */}
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleViewPhotos(item.id)}
+                  >
+                    <Text style={styles.buttonText}>See photos</Text>
                   </TouchableOpacity>
                 </View>
                 {error && <Text style={styles.errorText}>{error}</Text>}
