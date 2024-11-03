@@ -3,10 +3,9 @@ class API::V1::EventPicturesController < ApplicationController
   before_action :set_event, only: [:create]
 
   def create
+    Rails.logger.debug params
     @event_picture = @event.event_pictures.new(event_picture_params)
     @event_picture.user = User.find(params["user_id"].to_i)
-
-    Rails.logger.debug params
 
     if @event_picture.save
       render json: { message: 'Imagen subida exitosamente.' }, status: :created

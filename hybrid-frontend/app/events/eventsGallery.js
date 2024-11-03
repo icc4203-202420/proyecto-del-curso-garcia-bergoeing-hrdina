@@ -10,6 +10,7 @@ const EventGallery = ({ route }) => {
   const [photos, setPhotos] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState('');
+  
 
   useEffect(() => {
     fetchEventPhotos();
@@ -17,6 +18,7 @@ const EventGallery = ({ route }) => {
 
   const fetchEventPhotos = async () => {
     try {
+      console.error(event_id)
       const response = await axios.get(`${NGROK_URL}/api/v1/events/${event_id}`);
       setPhotos(response.data.event_pictures || []);
     } catch (error) {
@@ -28,6 +30,9 @@ const EventGallery = ({ route }) => {
   const handlePhotoUpload = async () => {
     try {
       const user_id = await AsyncStorage.getItem("user_id");
+      console.error("Selected File: ", selectedFile)
+      console.error("Selected File Uri: ", selectedFile.uri)
+      console.error("Description: ", description)
       if (!selectedFile || !selectedFile.uri || !description) {
         Alert.alert("Please select an image and add a description.");
         return;
@@ -40,7 +45,7 @@ const EventGallery = ({ route }) => {
         type: selectedFile.type || 'image/jpeg',
       });
       formData.append('event_picture[description]', description);
-  
+      
       await axios.post(`${NGROK_URL}/api/v1/events/${event_id}/event_pictures/${user_id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -66,8 +71,10 @@ const EventGallery = ({ route }) => {
       base64: true,
     });
   
-    if (!result.cancelled) {
-      setSelectedFile(result);
+    console.error("Image Picker Result: ", result);
+  
+    if (!result.canceled) {
+      setSelectedFile(result.assets ? result.assets[0] : result); // Cambia esto si `assets` está presente
     }
   };
   
