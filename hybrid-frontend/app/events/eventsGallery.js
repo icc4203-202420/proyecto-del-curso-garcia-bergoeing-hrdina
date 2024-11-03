@@ -37,10 +37,14 @@ const EventGallery = ({ route }) => {
         Alert.alert("Please select an image and add a description.");
         return;
       }
-  
+
+      const imageUri = selectedFile.uri.startsWith("file://")
+        ? selectedFile.uri
+        : `file://${selectedFile.uri}`;
+
       const formData = new FormData();
       formData.append('event_picture[image]', {
-        uri: selectedFile.uri,
+        uri: imageUri,
         name: selectedFile.uri.split('/').pop(),
         type: selectedFile.type || 'image/jpeg',
       });
