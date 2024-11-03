@@ -1,17 +1,26 @@
-import React from 'react';
-import { View, Text, Button } from 'react-native';
+import React, { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { navigationRef } from '../navigation/navigationRef'; // Import navigationRef
 
-import UserHome from '../users/index.js'
+import UserHome from '../users/index.js';
 import BeerList from '../beers/beers.js';
-import BarsList from '../bars/barsList.js'
+import BarsList from '../bars/barsList.js';
 
 // Define the Tab Navigator
 const Tab = createBottomTabNavigator();
 
-const AppTabs = ({ navigation }) => {
+const AppTabs = () => {
+  const navigation = useNavigation(); // Get the navigation object
+
+  // Set the navigationRef to the current navigation object
+  useEffect(() => {
+    if (navigation && navigationRef) {
+      navigationRef.current = navigation; // Set the ref
+    }
+  }, [navigation]);
+
   return (
     <Tab.Navigator
       screenOptions={{

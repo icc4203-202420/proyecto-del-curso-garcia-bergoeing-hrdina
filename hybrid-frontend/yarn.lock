@@ -4061,7 +4061,7 @@ expo-modules-core@1.12.24:
   dependencies:
     invariant "^2.2.4"
 
-expo-notifications@^0.28.19:
+expo-notifications@~0.28.19:
   version "0.28.19"
   resolved "https://registry.npmjs.org/expo-notifications/-/expo-notifications-0.28.19.tgz"
   integrity sha512-rKKTnVQQ9XNQyTNwKmI9OlchhVu0XOZfRpImMqPFCJg6IwECM1izdas2SLCbE/GApg2Tw3U5R2fd26OnCtUU/w==

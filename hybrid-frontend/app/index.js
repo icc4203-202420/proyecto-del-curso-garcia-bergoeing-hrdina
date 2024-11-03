@@ -1,14 +1,17 @@
 import 'react-native-gesture-handler'; // Place this at the very top
+import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigationRef } from './navigation/navigationRef'; // Import navigationRef
+import setupNotificationHandler from '../util/notificationHandler'; // Import your notification handler
 
-//Paths
+// Paths
 import Login from './access/login';
 import SignUp from './access/SignUp';
-import BeerDetails from './beers/beerDetails.js'
-import BeerReviews from './beers/beerReviews.js'
-import AppTabs from './components/appTab.js'
+import BeerDetails from './beers/beerDetails.js';
+import BeerReviews from './beers/beerReviews.js';
+import AppTabs from './components/appTab.js';
 import BarEvents from './bars/barEvents.js';
 import AttendancesList from './events/attendancesList.js';
 import EventsGallery from './events/eventsGallery.js';
@@ -17,6 +20,9 @@ const Stack = createStackNavigator();
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Initialize notification handling
+  const linking = setupNotificationHandler();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -37,8 +43,9 @@ const App = () => {
       console.error('Error removing token:', error);
     }
   };
-  
+
   return (
+    <NavigationContainer ref={navigationRef} independent={true} linking={linking}>
     <Stack.Navigator initialRouteName="Login">
       <>
         <Stack.Screen name="Login" component={Login} />
@@ -50,7 +57,8 @@ const App = () => {
         <Stack.Screen name="AttendancesList" component={AttendancesList} />
         <Stack.Screen name="EventsGallery" component={EventsGallery} />
       </>
-  </Stack.Navigator>
+    </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
