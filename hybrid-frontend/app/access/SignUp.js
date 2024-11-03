@@ -5,7 +5,6 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import qs from 'qs'; // Asegúrate de tener esta librería instalada
 import { registerForPushNotificationsAsync } from "../../util/Notifications";
 

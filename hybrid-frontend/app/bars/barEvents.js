@@ -1,6 +1,6 @@
 import { NGROK_URL } from '@env';
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { registerForPushNotificationsAsync } from "../../util/Notifications";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -57,8 +57,8 @@ const BarEvents = () => {
         }
       );
 
-      if (response.data.attendance) {
-        console.log('User checked in:', response.data.attendance.user_id);
+      if(response.status == 208){
+        Alert.alert('Ya te has registrado para este evento!');
       }
 
     } catch (error) {

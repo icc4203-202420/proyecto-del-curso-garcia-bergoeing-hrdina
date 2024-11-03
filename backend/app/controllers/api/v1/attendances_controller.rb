@@ -6,7 +6,7 @@ class API::V1::AttendancesController < ApplicationController
     user = User.find(params[:user_id])
     attendance = Attendance.find_or_initialize_by(user: user, event: @event)
     if attendance.checked_in
-      render json: { message: "Ya has confirmado tu asistencia." }, status: :unprocessable_entity
+      render json: { message: "Ya has confirmado tu asistencia." }, status: :already_reported
     elsif attendance.check_in
       if user.push_token.present?
         PushNotificationService.send_notification(
