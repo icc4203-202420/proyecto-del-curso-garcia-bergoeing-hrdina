@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, ActivityIndicator, Text, RadioButton, Searchbar } from 'react-native-paper';
 import { NGROK_URL } from '@env';
 
+
 const SearchUser = () => {
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -81,7 +82,10 @@ const SearchUser = () => {
             .map(option => (
               <View key={option.user_id}>
                 <Text
-                  onPress={() => setSelectedUser(option)}
+                  onPress={() => {
+                    setSelectedUser(option);
+                    setSelectedBar(null); // Clear selected bar when a new user is selected
+                  }}
                   style={[
                     styles.optionText,
                     selectedUser?.user_id === option.user_id && styles.selectedOption,
@@ -89,10 +93,11 @@ const SearchUser = () => {
                 >
                   @{option.handle}
                 </Text>
-                {selectedUser?.user_id === option.user_id && (
+                {/* Render bar selection if the user has events */}
+                {selectedUser?.user_id === option.user_id && selectedUser.events.length > 0 && (
                   <FlatList
                     data={selectedUser.events}
-                    keyExtractor={(_, index) => index.toString()}
+                    keyExtractor={(item) => item.bar_id.toString()}
                     numColumns={2}
                     renderItem={({ item }) => (
                       <Text
