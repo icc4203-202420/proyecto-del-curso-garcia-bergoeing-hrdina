@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Alert, StyleSheet, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getItem, deleteItem } from "../../util/Storage";
 import { useNavigation } from '@react-navigation/native';
 
 const UserHome = () => {
@@ -13,7 +13,7 @@ const UserHome = () => {
     const fetchUserName = async () => {
       setLoading(true); // Start loading
       try {
-        const storedName = await AsyncStorage.getItem('user_name'); // Assuming the user's name is stored under 'user_name'
+        const storedName = await getItem('user_name'); // Assuming the user's name is stored under 'user_name'
         if (storedName) {
           setUserName(storedName);
         }
@@ -30,8 +30,8 @@ const UserHome = () => {
   const handleLogout = async () => {
     setLoading(true); // Start loading
     try {
-      await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('user_id');
+      await deleteItem('authToken');
+      await deleteItem('user_id');
       navigation.navigate('Login');
     } catch (error) {
       console.error('Error removing token:', error);
