@@ -3,20 +3,24 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Image, TextInput, ScrollView, Alert, StyleSheet, FlatList } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { getItem } from "../../util/Storage";
-import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'; // You'll need to install this package
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
 
 const EventGallery = ({ route }) => {
   const { event_id } = route.params;
   const [photos, setPhotos] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState('');
-  const [users, setUsers] = useState([]);
+  const [userHandles, setUserHandles] = useState([]); // Nuevo estado para los handles
   const [loadingUsers, setLoadingUsers] = useState(false);
   
   useEffect(() => {
-    fetchEventPhotos();
-    fetchUsers();
+    fetchEventData();
   }, [event_id]);
+
+  const fetchEventData = async () => {
+    await fetchEventPhotos();
+    await fetchUsers();
+  };
 
   const fetchEventPhotos = async () => {
     try {
@@ -33,24 +37,31 @@ const EventGallery = ({ route }) => {
     const user_id = await getItem("user_id");
     setLoadingUsers(true);
     try {
-      // Construct the URL with query parameters
       const url = new URL(`${NGROK_URL}/api/v1/users`);
-      url.searchParams.append('user_id', user_id); // Append user_id
-      url.searchParams.append('event_id', event_id); // Append event_id
-
-      const response = await fetch(url, {
-        method: 'GET',
-      });
+      url.searchParams.append('user_id', user_id);
+      url.searchParams.append('event_id', event_id);
+  
+      const response = await fetch(url, { method: 'GET' });
       const data = await response.json();
-      console.error(data)
-      setUsers(data || []);
+  
+      // Extraer los handles de los usuarios y guardarlos en userHandles
+      const handles = data.map(user => user.handle).filter(Boolean); // Filtrar handles que no sean nulos
+      setUserHandles(handles.map((handle, index) => ({
+        id: index.toString(),
+        title: `@${handle}`,
+      })));
     } catch (error) {
       console.error('Error fetching users:', error);
-      setUsers([]);
+      setUserHandles([]);
     } finally {
       setLoadingUsers(false);
     }
   };
+
+  useEffect(() => {
+    console.error("Contenido de userHandles actualizado:", userHandles);
+  }, [userHandles]);
+  
 
   const handlePhotoUpload = async () => {
     try {
@@ -79,7 +90,7 @@ const EventGallery = ({ route }) => {
       });
 
       if (response.ok) {
-        fetchEventPhotos();  // Refresh photos
+        fetchEventPhotos();
         setSelectedFile(null);
         setDescription('');
       } else {
@@ -105,7 +116,7 @@ const EventGallery = ({ route }) => {
     });
 
     if (!result.canceled) {
-      setSelectedFile(result.assets ? result.assets[0] : result); // Adjust if `assets` is present
+      setSelectedFile(result.assets ? result.assets[0] : result);
     }
   };
 
@@ -131,12 +142,12 @@ const EventGallery = ({ route }) => {
   };
 
   const tagUser = (user) => {
-    if (user && user.handle) {
-      setDescription((prev) => prev + `@${user.handle} `);
+    if (user && user.title) {
+      setDescription((prev) => prev + `${user.title} `);
     } else {
       console.warn("User is null or doesn't have a handle.");
     }
-  };  
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -163,10 +174,11 @@ const EventGallery = ({ route }) => {
         />
 
         <AutocompleteDropdown
-          data={users}
+          dataSet={userHandles}
           onSelectItem={(item) => tagUser(item)}
           loading={loadingUsers}
-          placeHolder="Tag a user (start with @)"
+          useFilter={false}
+          placeholder="Tag a user (start with @)"
           style={styles.autocomplete}
         />
 
