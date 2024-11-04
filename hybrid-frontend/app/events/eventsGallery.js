@@ -1,17 +1,21 @@
 import { NGROK_URL } from '@env';
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Image, TextInput, ScrollView, Alert, StyleSheet } from 'react-native';
+import { View, Text, Button, Image, TextInput, ScrollView, Alert, StyleSheet, FlatList } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'; // You'll need to install this package
 
 const EventGallery = ({ route }) => {
   const { event_id } = route.params;
   const [photos, setPhotos] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState('');
-
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  
   useEffect(() => {
     fetchEventPhotos();
+    fetchUsers();
   }, [event_id]);
 
   const fetchEventPhotos = async () => {
@@ -25,15 +29,38 @@ const EventGallery = ({ route }) => {
     }
   };
 
+  const fetchUsers = async () => {
+    const user_id = await AsyncStorage.getItem("user_id");
+    setLoadingUsers(true);
+    try {
+      // Construct the URL with query parameters
+      const url = new URL(`${NGROK_URL}/api/v1/users`);
+      url.searchParams.append('user_id', user_id); // Append user_id
+      url.searchParams.append('event_id', event_id); // Append event_id
+
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+      const data = await response.json();
+      console.error(data)
+      setUsers(data || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setUsers([]);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
   const handlePhotoUpload = async () => {
     try {
       const user_id = await AsyncStorage.getItem("user_id");
-  
+
       if (!selectedFile || !selectedFile.uri || !description) {
         Alert.alert("Please select an image and add a description.");
         return;
       }
-  
+
       const formData = new FormData();
       formData.append('event_picture[image]', {
         uri: selectedFile.uri,
@@ -41,7 +68,7 @@ const EventGallery = ({ route }) => {
         type: 'image/jpeg',
       });
       formData.append('event_picture[description]', description);
-  
+
       const response = await fetch(`${NGROK_URL}/api/v1/events/${event_id}/event_pictures/${user_id}`, {
         method: 'POST',
         headers: {
@@ -50,7 +77,7 @@ const EventGallery = ({ route }) => {
         },
         body: formData,
       });
-  
+
       if (response.ok) {
         fetchEventPhotos();  // Refresh photos
         setSelectedFile(null);
@@ -63,7 +90,6 @@ const EventGallery = ({ route }) => {
       console.error('Error uploading photo:', error);
     }
   };
-  
 
   const handleImageSelection = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -85,26 +111,32 @@ const EventGallery = ({ route }) => {
 
   const handleTakePhoto = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-  
+
     if (permissionResult.granted === false) {
       Alert.alert('Permission to access camera is required!');
       return;
     }
-  
+
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
     });
-  
+
     if (!result.canceled) {
-      // Accede a la imagen en result.assets si assets está presente
       const photo = result.assets ? result.assets[0] : result;
       setSelectedFile(photo);
     } else {
       console.error("Photo capture was cancelled.");
     }
   };
-  
+
+  const tagUser = (user) => {
+    if (user && user.handle) {
+      setDescription((prev) => prev + `@${user.handle} `);
+    } else {
+      console.warn("User is null or doesn't have a handle.");
+    }
+  };  
 
   return (
     <ScrollView style={styles.container}>
@@ -128,6 +160,14 @@ const EventGallery = ({ route }) => {
           onChangeText={setDescription}
           style={styles.input}
           multiline
+        />
+
+        <AutocompleteDropdown
+          data={users}
+          onSelectItem={(item) => tagUser(item)}
+          loading={loadingUsers}
+          placeHolder="Tag a user (start with @)"
+          style={styles.autocomplete}
         />
 
         <Button
@@ -194,6 +234,11 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 4,
     marginBottom: 16,
+  },
+  autocomplete: {
+    marginBottom: 16,
+    backgroundColor: '#333',
+    borderRadius: 4,
   },
   photoGrid: {
     flexDirection: 'row',

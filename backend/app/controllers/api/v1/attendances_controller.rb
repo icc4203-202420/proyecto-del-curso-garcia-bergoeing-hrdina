@@ -3,6 +3,7 @@ class API::V1::AttendancesController < ApplicationController
   before_action :set_event
   #check in de los users
   def create
+    Rails.logger.info "response: #{params}"
     user = User.find(params[:user_id])
     attendance = Attendance.find_or_initialize_by(user: user, event: @event)
     if attendance.checked_in
