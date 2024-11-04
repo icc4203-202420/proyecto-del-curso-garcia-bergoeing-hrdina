@@ -7,8 +7,8 @@ import axios from 'axios';
 import qs from 'qs';
 import {jwtDecode} from 'jwt-decode';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import { registerForPushNotificationsAsync } from "../../util/Notifications";
+import { saveItem } from "../../util/Storage";
 
 const validationSchema = Yup.object({
   email: Yup.string().email('Email no válido').required('El email es requerido'),
@@ -35,7 +35,7 @@ const LoginForm = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${NGROK_URL}/api/v1/login`, qs.stringify({ user: values }), {
+      const response = await axios.post(`${NGROK_URL}/api/v1/login`, qs.stringify({ user: updatedValues }), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
   
@@ -43,10 +43,10 @@ const LoginForm = () => {
   
       if (receivedToken) {
         // Store the token in AsyncStorage
-        await AsyncStorage.setItem('authToken', receivedToken);
+        await saveItem('authToken', receivedToken);
 
         const decodedToken = jwtDecode(receivedToken);
-        await AsyncStorage.setItem('user_id', decodedToken.sub.toString());
+        await saveItem('user_id', decodedToken.sub.toString());
 
         navigation.navigate('Main');
       } else {

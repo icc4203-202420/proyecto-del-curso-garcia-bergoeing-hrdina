@@ -2,7 +2,7 @@ import { NGROK_URL } from '@env';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Image, TextInput, ScrollView, Alert, StyleSheet, FlatList } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getItem } from "../../util/Storage";
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'; // You'll need to install this package
 
 const EventGallery = ({ route }) => {
@@ -30,7 +30,7 @@ const EventGallery = ({ route }) => {
   };
 
   const fetchUsers = async () => {
-    const user_id = await AsyncStorage.getItem("user_id");
+    const user_id = await getItem("user_id");
     setLoadingUsers(true);
     try {
       // Construct the URL with query parameters
@@ -54,7 +54,7 @@ const EventGallery = ({ route }) => {
 
   const handlePhotoUpload = async () => {
     try {
-      const user_id = await AsyncStorage.getItem("user_id");
+      const user_id = await getItem("user_id");
 
       if (!selectedFile || !selectedFile.uri || !description) {
         Alert.alert("Please select an image and add a description.");

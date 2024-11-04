@@ -2,7 +2,7 @@ import { NGROK_URL } from '@env';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getItem } from "../../util/Storage";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -28,7 +28,7 @@ const BeerReviews = () => {
   const navigation = useNavigation();
 
   const handleSubmit = async (values, { setSubmitting }) => {
-    const userId = await AsyncStorage.getItem('user_id');
+    const userId = await getItem('user_id');
     values.user_id = userId;
     values.rating = parseInt(rating);
 
@@ -39,7 +39,7 @@ const BeerReviews = () => {
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
+            'Authorization': `Bearer ${await getItem('token')}`
           }
         }
       );

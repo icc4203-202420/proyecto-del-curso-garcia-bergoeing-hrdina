@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Alert, StyleSheet, ScrollView, FlatList } from 'react-native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, ActivityIndicator, Text, RadioButton, Searchbar } from 'react-native-paper';
+import { getItem } from "../../util/Storage";
 import { NGROK_URL } from '@env';
 
 
@@ -17,7 +17,7 @@ const SearchUser = () => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const userId = await AsyncStorage.getItem('user_id');
+        const userId = await getItem('user_id');
         const response = await axios.get(`${NGROK_URL}/api/v1/users`, {
           params: { user_id: userId },
         });
@@ -49,7 +49,7 @@ const SearchUser = () => {
   const handleAddFriend = async () => {
     if (selectedUser) {
       try {
-        const userId = await AsyncStorage.getItem('user_id');
+        const userId = await getItem('user_id');
         await axios.post(`${NGROK_URL}/api/v1/users/${userId}/friendships`, {
           friend_id: selectedUser.user_id,
           event_id: selectedBar?.event_id || null, // Optional

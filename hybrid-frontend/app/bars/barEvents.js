@@ -1,10 +1,10 @@
+import axios from 'axios';
 import { NGROK_URL } from '@env';
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { registerForPushNotificationsAsync } from "../../util/Notifications";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { getItem } from "../../util/Storage";
 
 const BarEvents = () => {
   const navigation = useNavigation();
@@ -36,8 +36,8 @@ const BarEvents = () => {
 
   const handleCheckIn = async (event_id) => {
     setCheckingIn(event_id);  // Mostrar el estado de carga para este evento
-    const token = await AsyncStorage.getItem('authToken');  // Obtener token del almacenamiento
-    const userId = parseInt(await AsyncStorage.getItem("user_id"), 10);
+    const token = await getItem('authToken');  // Obtener token del almacenamiento
+    const userId = parseInt(await getItem("user_id"), 10);
     const pushToken = await registerForPushNotificationsAsync();
 
     if (!token) {

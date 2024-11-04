@@ -2,7 +2,7 @@ import 'react-native-gesture-handler'; // Place this at the very top
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getItem } from "../util/Storage";
 import { navigationRef } from './navigation/navigationRef'; // Import navigationRef
 import setupNotificationHandler from '../util/notificationHandler'; // Import your notification handler
 
@@ -27,7 +27,7 @@ const App = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('authToken');
+      const token = await getItem('authToken');
       if (token) {
         setIsAuthenticated(true);
       }
