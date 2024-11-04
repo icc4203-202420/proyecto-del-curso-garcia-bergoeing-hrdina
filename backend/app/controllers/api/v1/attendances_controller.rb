@@ -18,6 +18,19 @@ class API::V1::AttendancesController < ApplicationController
       else
         render json: { message: "Has confirmado tu asistencia." }, status: :ok
       end
+
+      friends_to_notify = User.where(id: Friendship.where(user_id: user.id).select(:friend_id))
+      friends_to_notify.each do |recipient|
+        if recipient.push_token.present?
+          PushNotificationService.send_notification(
+            to: recipient.push_token,
+            title: "Un amigo se acabá de regristrar a un evento!",
+            body: "#{user.handle} estara participando en el evento #{@event.name}.",
+            data: { screen: "EventDetails", event_id: @event.id }
+          )
+        end
+      end
+
     else
       render json: { errors: attendance.errors.full_messages }, status: :unprocessable_entity
     end
