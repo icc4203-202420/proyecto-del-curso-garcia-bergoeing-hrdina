@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TextInput, Button, ActivityIndicator, Text } from 'react-native-paper';
+import { TextInput, Button, ActivityIndicator, Text, RadioButton } from 'react-native-paper';
 import { NGROK_URL } from '@env';
 
 const SearchUser = () => {
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -62,8 +63,8 @@ const SearchUser = () => {
         const userId = await AsyncStorage.getItem("user_id");
         await axios.post(`${NGROK_URL}/api/v1/users/${userId}/friendships`, {
           friend_id: selectedUser.user_id,
-          event_id: selectedUser.event_id,
-          bar_id: selectedUser.bar_id
+          event_id: selectedEvent?.event_id, // Optional
+          bar_id: selectedEvent?.bar_id // Optional
         });
         Alert.alert('Friend request sent!');
       } catch (error) {
@@ -77,31 +78,47 @@ const SearchUser = () => {
   return (
     <View style={styles.container}>
       <TextInput
-        label="Search for users"
+        label="Search by handle"
         value={searchQuery}
         onChangeText={(text) => setSearchQuery(text)}
         style={styles.input}
         underlineColor="transparent"
         theme={{ colors: { text: 'white', placeholder: 'white', primary: 'blue' } }}
-        right={<TextInput.Icon name="magnify" />}
+        placeholderTextColor="white"
+        right={<TextInput.Icon name="magnify" color="white" />}
       />
       <View style={styles.resultsContainer}>
         {loading ? (
-          <ActivityIndicator animating={true} color="#0000ff" />
+          <ActivityIndicator animating={true} color="#ffffff" />
         ) : (
           options
-            .filter(option => option.handle.includes(searchQuery))
+            .filter(option => option.handle.toLowerCase().includes(searchQuery.toLowerCase()))
             .map((option, index) => (
-              <Text
-                key={index}
-                onPress={() => setSelectedUser(option)}
-                style={[
-                  styles.optionText,
-                  selectedUser?.user_id === option.user_id && styles.selectedOption
-                ]}
-              >
-                {`Event: ${option.event_name} - Bar: ${option.bar_name}`}
-              </Text>
+              <View key={index}>
+                <Text
+                  onPress={() => setSelectedUser(option)}
+                  style={[
+                    styles.optionText,
+                    selectedUser?.user_id === option.user_id && styles.selectedOption
+                  ]}
+                >
+                  {`@${option.handle} - Event: ${option.event_name} - Bar: ${option.bar_name}`}
+                </Text>
+                {selectedUser?.user_id === option.user_id && (
+                  <RadioButton.Group
+                    onValueChange={value => setSelectedEvent(value)}
+                    value={selectedEvent}
+                  >
+                    <RadioButton.Item
+                      labelStyle={styles.radioButtonText}
+                      label={`${option.event_name} at ${option.bar_name}`}
+                      value={option}
+                      color="white"
+                      uncheckedColor="white"
+                    />
+                  </RadioButton.Group>
+                )}
+              </View>
             ))
         )}
       </View>
@@ -135,9 +152,13 @@ const styles = StyleSheet.create({
   selectedOption: {
     backgroundColor: '#444',
   },
+  radioButtonText: {
+    color: 'white', // Color de texto para las opciones de RadioButton
+  },
   button: {
     marginTop: 20,
   },
 });
 
 export default SearchUser;
+
