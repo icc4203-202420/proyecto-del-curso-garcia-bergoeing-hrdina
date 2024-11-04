@@ -49,11 +49,11 @@ const AppTabs = () => {
         }}
       />
       <Tab.Screen
-        name="Logout"
+        name="User"
         component={UserHome}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="log-out-outline" color={color} size={size} />
+            <Ionicons name="person" color={color} size={size} />
           ),
         }}
       />

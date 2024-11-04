@@ -40,10 +40,15 @@ const UserHome = () => {
     }
   };
 
+  const handleFriendsNavigation = () => {
+    navigation.navigate('SearchUser'); // Navigate to the SearchUser screen
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Welcome, {userName}!</Text>
       <Button title="Logout" onPress={handleLogout} disabled={loading} />
+      <Button title="Friends" onPress={handleFriendsNavigation} disabled={loading} />
       {loading && <ActivityIndicator size="small" color="#0000ff" />}
     </View>
   );
