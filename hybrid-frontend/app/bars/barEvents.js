@@ -5,6 +5,7 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, 
 import { registerForPushNotificationsAsync } from "../../util/Notifications";
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { getItem } from "../../util/Storage";
+import { Video } from 'expo-av';
 
 const BarEvents = () => {
   const navigation = useNavigation();
@@ -57,7 +58,7 @@ const BarEvents = () => {
         }
       );
 
-      if(response.status == 208){
+      if (response.status === 208) {
         Alert.alert('You are already registered for this event!');
       }
     } catch (error) {
@@ -65,6 +66,24 @@ const BarEvents = () => {
       setError('Failed to check in. Please try again.');
     } finally {
       setCheckingIn(null);
+    }
+  };
+
+  const handleFetchVideo = async (event_id) => {
+    try {
+      const response = await axios.get(`${NGROK_URL}/api/v1/events/${event_id}/fetch_video`, {
+        responseType: 'blob',
+      });
+
+      if (response.status === 200) {
+        const videoUri = URL.createObjectURL(response.data);
+        navigation.navigate('VideoPlayer', { videoUri });
+      } else {
+        Alert.alert('Video not available');
+      }
+    } catch (error) {
+      console.error('Error fetching video:', error);
+      Alert.alert('Failed to load video. Please try again.');
     }
   };
 
@@ -82,7 +101,7 @@ const BarEvents = () => {
         <>
           <Text style={styles.title}>{bar.name}</Text>
           <Text style={styles.subtitle}>Address: {bar.address?.line1 || 'No address available'}</Text>
-          
+
           <FlatList
             data={events}
             keyExtractor={(item) => item.id.toString()}
@@ -92,7 +111,7 @@ const BarEvents = () => {
                 <Text>Description: {item.description}</Text>
                 <Text>Start Date: {new Date(item.start_date).toLocaleDateString()}</Text>
                 <Text>End Date: {item.end_date ? new Date(item.end_date).toLocaleDateString() : 'Ongoing'}</Text>
-                
+
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
                     style={styles.button}
@@ -104,7 +123,7 @@ const BarEvents = () => {
                   <TouchableOpacity
                     style={[
                       styles.button,
-                      { backgroundColor: isEventEnded(item.end_date) ? '#888' : '#28a745', marginLeft: 10 }
+                      { backgroundColor: isEventEnded(item.end_date) ? '#888' : '#28a745', marginLeft: 10 },
                     ]}
                     onPress={() => handleCheckIn(item.id)}
                     disabled={checkingIn === item.id || isEventEnded(item.end_date)}
@@ -119,12 +138,23 @@ const BarEvents = () => {
                   <TouchableOpacity
                     style={[
                       styles.button,
-                      { backgroundColor: isEventStarted(item.start_date) ? '#007BFF' : '#888' }
+                      { backgroundColor: isEventStarted(item.start_date) ? '#007BFF' : '#888' },
                     ]}
                     onPress={() => handleViewPhotos(item.id)}
                     disabled={!isEventStarted(item.start_date)}
                   >
                     <Text style={styles.buttonText}>See photos</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.button,
+                      { backgroundColor: isEventEnded(item.end_date) ? '#FFD700' : '#888', marginLeft: 10 },
+                    ]}
+                    onPress={() => handleFetchVideo(item.id)}
+                    disabled={!isEventEnded(item.end_date)}
+                  >
+                    <Text style={styles.buttonText}>Watch Video</Text>
                   </TouchableOpacity>
                 </View>
                 {error && <Text style={styles.errorText}>{error}</Text>}

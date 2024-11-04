@@ -27,6 +27,9 @@ Rails.application.routes.draw do
       end
 
       resources :events, only: [:index, :show, :create, :update, :destroy] do
+        member do
+          get :fetch_video
+        end
         resources :attendances
         resources :event_pictures, only: [:create] do
           collection do

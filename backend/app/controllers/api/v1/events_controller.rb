@@ -2,7 +2,7 @@ class API::V1::EventsController < ApplicationController
   include ImageProcessing
   
   respond_to :json
-  before_action :set_event, only: [:show, :update, :destroy]
+  before_action :set_event, only: [:show, :update, :destroy, :fetch_video]
   before_action :set_bar, only: [:index]
 
   def index
@@ -76,6 +76,16 @@ class API::V1::EventsController < ApplicationController
       end
   end
 
+  def fetch_video
+    if @event.video.attached?
+      # Send the attached video file
+      send_data @event.video.download, type: @event.video.content_type, disposition: 'inline'
+    else
+      # Enqueue the job to generate the video
+      GenerateEventVideoJob.perform_later(@event)
+      render json: { error: 'Video not available. Video generation has been started.' }, status: :not_found
+    end
+  end
 
   private
   def set_bar

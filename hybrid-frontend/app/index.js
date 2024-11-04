@@ -16,6 +16,7 @@ import BarEvents from './bars/barEvents.js';
 import AttendancesList from './events/attendancesList.js';
 import EventsGallery from './events/eventsGallery.js';
 import SearchUser from './users/searchUser.js';
+import VideoPlayer from './components/videoPlayer'; // Import the VideoPlayer
 
 const Stack = createStackNavigator();
 
@@ -48,6 +49,7 @@ const App = () => {
         <Stack.Screen name="AttendancesList" component={AttendancesList} />
         <Stack.Screen name="EventsGallery" component={EventsGallery} />
         <Stack.Screen name="SearchUser" component={SearchUser} />
+        <Stack.Screen name="VideoPlayer" component={VideoPlayer} />
       </>
     </Stack.Navigator>
     </NavigationContainer>
