@@ -13,7 +13,7 @@ class API::V1::AttendancesController < ApplicationController
           to: user.push_token,
           title: "Has confirmado tu asistencia al evento!",
           body: "Estaremos esperandote en el evento #{@event.name}.",
-          data: { screen: "EventDetails", eventId: @event.id }
+          data: { screen: "EventDetails", event_id: @event.id }
         )
       else
         render json: { message: "Has confirmado tu asistencia." }, status: :ok

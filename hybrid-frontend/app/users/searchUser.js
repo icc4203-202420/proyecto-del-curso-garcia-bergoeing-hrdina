@@ -1,53 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, StyleSheet } from 'react-native';
+import { View, Alert, StyleSheet, ScrollView, FlatList } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TextInput, Button, ActivityIndicator, Text, RadioButton } from 'react-native-paper';
+import { Button, ActivityIndicator, Text, RadioButton, Searchbar } from 'react-native-paper';
 import { NGROK_URL } from '@env';
 
 const SearchUser = () => {
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedBar, setSelectedBar] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = await AsyncStorage.getItem('authToken');
-      if (token) {
-        setIsAuthenticated(true);
-      }
-    };
-    checkAuth();
-  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const userId = await AsyncStorage.getItem("user_id");
+        const userId = await AsyncStorage.getItem('user_id');
         const response = await axios.get(`${NGROK_URL}/api/v1/users`, {
-          params: { user_id: userId }
+          params: { user_id: userId },
         });
 
         const users = Array.isArray(response.data) ? response.data : [response.data];
-
-        const userOptions = users.flatMap(user => 
-          user.events.map(event => ({
-            user_id: user.id,
-            handle: user.handle,
+        const userOptions = users.map(user => ({
+          user_id: user.id,
+          handle: user.handle,
+          events: user.events.map(event => ({
             event_name: event.event_name,
             bar_name: event.bar_name,
             event_id: event.event_id,
             bar_id: event.bar_id,
-          }))
-        );
+          })),
+        }));
 
         setOptions(userOptions);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error('Error fetching users:', error);
         setOptions([]);
       } finally {
         setLoading(false);
@@ -60,15 +48,15 @@ const SearchUser = () => {
   const handleAddFriend = async () => {
     if (selectedUser) {
       try {
-        const userId = await AsyncStorage.getItem("user_id");
+        const userId = await AsyncStorage.getItem('user_id');
         await axios.post(`${NGROK_URL}/api/v1/users/${userId}/friendships`, {
           friend_id: selectedUser.user_id,
-          event_id: selectedEvent?.event_id, // Optional
-          bar_id: selectedEvent?.bar_id // Optional
+          event_id: selectedBar?.event_id || null, // Optional
+          bar_id: selectedBar?.bar_id || null, // Optional
         });
         Alert.alert('Friend request sent!');
       } catch (error) {
-        console.error("Error adding friend:", error);
+        console.error('Error adding friend:', error);
       }
     } else {
       Alert.alert('Please select a user.');
@@ -77,51 +65,52 @@ const SearchUser = () => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        label="Search by handle"
+      <Searchbar
+        placeholder="Search by handle"
         value={searchQuery}
-        onChangeText={(text) => setSearchQuery(text)}
-        style={styles.input}
-        underlineColor="transparent"
-        theme={{ colors: { text: 'white', placeholder: 'white', primary: 'blue' } }}
-        placeholderTextColor="white"
-        right={<TextInput.Icon name="magnify" color="white" />}
+        onChangeText={text => setSearchQuery(text)}
+        style={styles.searchbar}
+        iconColor="white"
       />
-      <View style={styles.resultsContainer}>
+      <ScrollView style={styles.resultsContainer}>
         {loading ? (
           <ActivityIndicator animating={true} color="#ffffff" />
         ) : (
           options
             .filter(option => option.handle.toLowerCase().includes(searchQuery.toLowerCase()))
-            .map((option, index) => (
-              <View key={index}>
+            .map(option => (
+              <View key={option.user_id}>
                 <Text
                   onPress={() => setSelectedUser(option)}
                   style={[
                     styles.optionText,
-                    selectedUser?.user_id === option.user_id && styles.selectedOption
+                    selectedUser?.user_id === option.user_id && styles.selectedOption,
                   ]}
                 >
-                  {`@${option.handle} - Event: ${option.event_name} - Bar: ${option.bar_name}`}
+                  @{option.handle}
                 </Text>
                 {selectedUser?.user_id === option.user_id && (
-                  <RadioButton.Group
-                    onValueChange={value => setSelectedEvent(value)}
-                    value={selectedEvent}
-                  >
-                    <RadioButton.Item
-                      labelStyle={styles.radioButtonText}
-                      label={`${option.event_name} at ${option.bar_name}`}
-                      value={option}
-                      color="white"
-                      uncheckedColor="white"
-                    />
-                  </RadioButton.Group>
+                  <FlatList
+                    data={selectedUser.events}
+                    keyExtractor={(_, index) => index.toString()}
+                    numColumns={2}
+                    renderItem={({ item }) => (
+                      <Text
+                        style={[
+                          styles.barText,
+                          selectedBar?.bar_id === item.bar_id && styles.selectedBar,
+                        ]}
+                        onPress={() => setSelectedBar(item)}
+                      >
+                        {item.bar_name}
+                      </Text>
+                    )}
+                  />
                 )}
               </View>
             ))
         )}
-      </View>
+      </ScrollView>
       <Button mode="contained" onPress={handleAddFriend} style={styles.button}>
         Add Friend
       </Button>
@@ -135,12 +124,11 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#333',
   },
-  input: {
-    backgroundColor: '#333',
-    color: 'white',
+  searchbar: {
     marginBottom: 16,
   },
   resultsContainer: {
+    flex: 1,
     marginVertical: 10,
   },
   optionText: {
@@ -152,8 +140,16 @@ const styles = StyleSheet.create({
   selectedOption: {
     backgroundColor: '#444',
   },
-  radioButtonText: {
-    color: 'white', // Color de texto para las opciones de RadioButton
+  barText: {
+    color: 'white',
+    padding: 8,
+    margin: 4,
+    backgroundColor: '#555',
+    textAlign: 'center',
+    borderRadius: 4,
+  },
+  selectedBar: {
+    backgroundColor: '#777',
   },
   button: {
     marginTop: 20,
@@ -161,4 +157,3 @@ const styles = StyleSheet.create({
 });
 
 export default SearchUser;
-

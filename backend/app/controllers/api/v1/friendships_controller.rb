@@ -23,6 +23,14 @@ class API::V1::FriendshipsController < ApplicationController
     @friendship = Friendship.new(user_id: @user.id, friend_id: friend.id, bar_id: params[:bar_id], event_id: params[:event_id])
   
     if @friendship.save
+      if friend.push_token.present?
+        PushNotificationService.send_notification(
+          to: friend.push_token,
+          title: "Has recibido peticion de amistad!",
+          body: "El usuario #{@user.handle} quiere ser tu amigo.",
+          data: { screen: "Main" }
+        )
+      end
       render json: { message: "Friendship created successfully." }, status: :created
     else
       render json: { errors: @friendship.errors.full_messages }, status: :unprocessable_entity
