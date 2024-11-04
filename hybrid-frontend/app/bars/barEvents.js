@@ -12,11 +12,11 @@ const BarEvents = () => {
   const { barId } = route.params;
   const [bar, setBar] = useState(null);
   const [events, setEvents] = useState([]);
-  const [checkingIn, setCheckingIn] = useState(null); // Para indicar el estado del check-in
+  const [checkingIn, setCheckingIn] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Obtener información del bar y eventos
+    // Fetch bar and event information
     axios.get(`${NGROK_URL}/api/v1/bars/${barId}`)
       .then(response => setBar(response.data.bar))
       .catch(error => console.error('Error fetching bar details:', error));
@@ -35,8 +35,8 @@ const BarEvents = () => {
   };
 
   const handleCheckIn = async (event_id) => {
-    setCheckingIn(event_id);  // Mostrar el estado de carga para este evento
-    const token = await getItem('authToken');  // Obtener token del almacenamiento
+    setCheckingIn(event_id);
+    const token = await getItem('authToken');
     const userId = parseInt(await getItem("user_id"), 10);
     const pushToken = await registerForPushNotificationsAsync();
 
@@ -48,7 +48,7 @@ const BarEvents = () => {
     try {
       const response = await axios.post(
         `${NGROK_URL}/api/v1/bars/${barId}/events/${event_id}/attendances`,
-        { user_id: userId,  push_token: pushToken},
+        { user_id: userId, push_token: pushToken },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,15 +58,22 @@ const BarEvents = () => {
       );
 
       if(response.status == 208){
-        Alert.alert('Ya te has registrado para este evento!');
+        Alert.alert('You are already registered for this event!');
       }
-
     } catch (error) {
       console.error('Check-in error:', error);
       setError('Failed to check in. Please try again.');
     } finally {
       setCheckingIn(null);
     }
+  };
+
+  const isEventStarted = (startDate) => {
+    return new Date() >= new Date(startDate);
+  };
+
+  const isEventEnded = (endDate) => {
+    return endDate ? new Date() > new Date(endDate) : false;
   };
 
   return (
@@ -84,10 +91,9 @@ const BarEvents = () => {
                 <Text style={styles.eventTitle}>{item.name}</Text>
                 <Text>Description: {item.description}</Text>
                 <Text>Start Date: {new Date(item.start_date).toLocaleDateString()}</Text>
-                <Text>End Date: {new Date(item.end_date).toLocaleDateString()}</Text>
+                <Text>End Date: {item.end_date ? new Date(item.end_date).toLocaleDateString() : 'Ongoing'}</Text>
+                
                 <View style={styles.buttonContainer}>
-                  
-                  {/* Botón de ver asistentes */}
                   <TouchableOpacity
                     style={styles.button}
                     onPress={() => handleViewAttendances(item.id)}
@@ -95,11 +101,13 @@ const BarEvents = () => {
                     <Text style={styles.buttonText}>See Attendees</Text>
                   </TouchableOpacity>
 
-                  {/* Botón de Check In */}
                   <TouchableOpacity
-                    style={[styles.button, { backgroundColor: '#28a745', marginLeft: 10 }]}
+                    style={[
+                      styles.button,
+                      { backgroundColor: isEventEnded(item.end_date) ? '#888' : '#28a745', marginLeft: 10 }
+                    ]}
                     onPress={() => handleCheckIn(item.id)}
-                    disabled={checkingIn === item.id} // Desactivar durante el check-in
+                    disabled={checkingIn === item.id || isEventEnded(item.end_date)}
                   >
                     {checkingIn === item.id ? (
                       <ActivityIndicator color="#fff" />
@@ -107,10 +115,14 @@ const BarEvents = () => {
                       <Text style={styles.buttonText}>Check In</Text>
                     )}
                   </TouchableOpacity>
-                  {/* Botón de ver fotos */}
+
                   <TouchableOpacity
-                    style={styles.button}
+                    style={[
+                      styles.button,
+                      { backgroundColor: isEventStarted(item.start_date) ? '#007BFF' : '#888' }
+                    ]}
                     onPress={() => handleViewPhotos(item.id)}
+                    disabled={!isEventStarted(item.start_date)}
                   >
                     <Text style={styles.buttonText}>See photos</Text>
                   </TouchableOpacity>
