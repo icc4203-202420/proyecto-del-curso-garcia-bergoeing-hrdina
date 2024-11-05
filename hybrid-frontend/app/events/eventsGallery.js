@@ -1,18 +1,17 @@
 import { NGROK_URL } from '@env';
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Image, TextInput, ScrollView, Alert, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Button, Image, TextInput, ScrollView, Alert, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { getItem } from "../../util/Storage";
-import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
 
 const EventGallery = ({ route }) => {
   const { event_id } = route.params;
   const [photos, setPhotos] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState('');
-  const [userHandles, setUserHandles] = useState([]); // Nuevo estado para los handles
+  const [userHandles, setUserHandles] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  
+
   useEffect(() => {
     fetchEventData();
   }, [event_id]);
@@ -32,36 +31,6 @@ const EventGallery = ({ route }) => {
       setPhotos([]);
     }
   };
-
-  const fetchUsers = async () => {
-    const user_id = await getItem("user_id");
-    setLoadingUsers(true);
-    try {
-      const url = new URL(`${NGROK_URL}/api/v1/users`);
-      url.searchParams.append('user_id', user_id);
-      url.searchParams.append('event_id', event_id);
-  
-      const response = await fetch(url, { method: 'GET' });
-      const data = await response.json();
-  
-      // Extraer los handles de los usuarios y guardarlos en userHandles
-      const handles = data.map(user => user.handle).filter(Boolean); // Filtrar handles que no sean nulos
-      setUserHandles(handles.map((handle, index) => ({
-        id: index.toString(),
-        title: `@${handle}`,
-      })));
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      setUserHandles([]);
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
-
-  useEffect(() => {
-    console.error("Contenido de userHandles actualizado:", userHandles);
-  }, [userHandles]);
-  
 
   const handlePhotoUpload = async () => {
     try {
@@ -104,17 +73,14 @@ const EventGallery = ({ route }) => {
 
   const handleImageSelection = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
     if (permissionResult.granted === false) {
       Alert.alert('Permission to access gallery is required!');
       return;
     }
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
     });
-
     if (!result.canceled) {
       setSelectedFile(result.assets ? result.assets[0] : result);
     }
@@ -122,30 +88,45 @@ const EventGallery = ({ route }) => {
 
   const handleTakePhoto = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-
     if (permissionResult.granted === false) {
       Alert.alert('Permission to access camera is required!');
       return;
     }
-
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
     });
-
     if (!result.canceled) {
       const photo = result.assets ? result.assets[0] : result;
       setSelectedFile(photo);
-    } else {
-      console.error("Photo capture was cancelled.");
+    }
+  };
+
+  const fetchUsers = async () => {
+    const user_id = await getItem("user_id");
+    setLoadingUsers(true);
+    try {
+      const response = await fetch(`${NGROK_URL}/api/v1/users?user_id=${user_id}&event_id=${event_id}`);
+      const data = await response.json();
+
+      const handles = data.map(user => user.handle).filter(Boolean);
+      const formattedHandles = handles.map((handle, index) => ({
+        id: index.toString(),
+        title: `@${handle}`,
+      }));
+      setUserHandles(formattedHandles);
+      console.log("userHandles loaded:", formattedHandles);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setUserHandles([]);
+    } finally {
+      setLoadingUsers(false);
     }
   };
 
   const tagUser = (user) => {
     if (user && user.title) {
-      setDescription((prev) => (prev ? `${prev} ${user.title}` : user.title));
-    } else {
-      console.warn("User is null or doesn't have a title.");
+      setDescription((prev) => prev + `${user.title} `);
     }
   };  
 
@@ -167,31 +148,23 @@ const EventGallery = ({ route }) => {
 
         <TextInput
           placeholder="Description"
+          placeholderTextColor="gray"
           value={description}
           onChangeText={setDescription}
           style={styles.input}
           multiline
         />
 
-        <AutocompleteDropdown
-          dataSet={userHandles}
-          onSelectItem={(item) => tagUser(item)}
-          loading={loadingUsers}
-          useFilter={false} // Prevents automatic filtering of items
-          clearOnFocus={false}
-          closeOnSubmit={false}
-          inputContainerStyle={styles.autocomplete}
-          textInputProps={{
-            placeholder: "Tag a user (start with @)",
-            style: { color: "white", paddingLeft: 8 },
-            autoCorrect: false, // Disable auto-correction for handles
-            autoCapitalize: "none", // Handles should not be capitalized
-          }}
-          suggestionsListMaxHeight={Dimensions.get('window').height * 0.4} // Optimize dropdown height
-          containerStyle={{ flexGrow: 1, flexShrink: 1 }}
-          renderItem={(item, text) => (
-            <Text style={{ color: "#fff", padding: 15 }}>{item.title}</Text>
+        <FlatList
+          data={userHandles}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => tagUser(item)} style={styles.handleItem}>
+              <Text style={styles.handleText}>{item.title}</Text>
+            </TouchableOpacity>
           )}
+          style={styles.handleList}
+          ListEmptyComponent={<Text style={styles.emptyText}>No users found</Text>}
         />
 
         <Button
@@ -259,10 +232,23 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 16,
   },
-  autocomplete: {
+  handleList: {
+    maxHeight: 150,
     marginBottom: 16,
     backgroundColor: '#333',
     borderRadius: 4,
+  },
+  handleItem: {
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#444',
+  },
+  handleText: {
+    color: 'white',
+  },
+  emptyText: {
+    color: 'gray',
+    padding: 8,
   },
   photoGrid: {
     flexDirection: 'row',
