@@ -1,6 +1,6 @@
 import { NGROK_URL } from '@env';
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Image, TextInput, ScrollView, Alert, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Button, Image, TextInput, ScrollView, Alert, StyleSheet, Dimensions } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { getItem } from "../../util/Storage";
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
@@ -143,11 +143,11 @@ const EventGallery = ({ route }) => {
 
   const tagUser = (user) => {
     if (user && user.title) {
-      setDescription((prev) => prev + `${user.title} `);
+      setDescription((prev) => (prev ? `${prev} ${user.title}` : user.title));
     } else {
-      console.warn("User is null or doesn't have a handle.");
+      console.warn("User is null or doesn't have a title.");
     }
-  };
+  };  
 
   return (
     <ScrollView style={styles.container}>
@@ -177,9 +177,21 @@ const EventGallery = ({ route }) => {
           dataSet={userHandles}
           onSelectItem={(item) => tagUser(item)}
           loading={loadingUsers}
-          useFilter={false}
-          placeholder="Tag a user (start with @)"
-          style={styles.autocomplete}
+          useFilter={false} // Prevents automatic filtering of items
+          clearOnFocus={false}
+          closeOnSubmit={false}
+          inputContainerStyle={styles.autocomplete}
+          textInputProps={{
+            placeholder: "Tag a user (start with @)",
+            style: { color: "white", paddingLeft: 8 },
+            autoCorrect: false, // Disable auto-correction for handles
+            autoCapitalize: "none", // Handles should not be capitalized
+          }}
+          suggestionsListMaxHeight={Dimensions.get('window').height * 0.4} // Optimize dropdown height
+          containerStyle={{ flexGrow: 1, flexShrink: 1 }}
+          renderItem={(item, text) => (
+            <Text style={{ color: "#fff", padding: 15 }}>{item.title}</Text>
+          )}
         />
 
         <Button
