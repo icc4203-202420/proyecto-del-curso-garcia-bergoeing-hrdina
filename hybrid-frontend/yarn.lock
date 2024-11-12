@@ -5516,6 +5516,16 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+lucide-react-native@^0.456.0:
+  version "0.456.0"
+  resolved "https://registry.npmjs.org/lucide-react-native/-/lucide-react-native-0.456.0.tgz"
+  integrity sha512-zSTeE2eWgW7guELAlqWkMA6193ueyl38WKHtX1z7iH6T3RYLZr/Yj5I7vvzRkxVnvuWMYMChMWOd7TbWWxhfbQ==
+
+lucide-react@^0.456.0:
+  version "0.456.0"
+  resolved "https://registry.npmjs.org/lucide-react/-/lucide-react-0.456.0.tgz"
+  integrity sha512-DIIGJqTT5X05sbAsQ+OhA8OtJYyD4NsEMCA/HQW/Y6ToPQ7gwbtujIoeAaup4HpHzV35SQOarKAWH8LYglB6eA==
+
 make-dir@^2.0.0, make-dir@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/make-dir/-/make-dir-2.1.0.tgz"
@@ -6806,7 +6816,7 @@ react-native-star-rating-widget@^1.9.1:
   resolved "https://registry.npmjs.org/react-native-star-rating-widget/-/react-native-star-rating-widget-1.9.1.tgz"
   integrity sha512-7q2gFcSYPSTgc0D0iNevYMiw6zEYOBdG5YVrFooABeZBS7je3xJPTJ/KbYZAOVak12sFKZSTIeBjBWK+/CAnfQ==
 
-react-native-svg@*, react-native-svg@>=13.0.0, react-native-svg@>=5.3:
+react-native-svg@*, "react-native-svg@^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0", react-native-svg@^15.8.0, react-native-svg@>=13.0.0, react-native-svg@>=5.3:
   version "15.8.0"
   resolved "https://registry.npmjs.org/react-native-svg/-/react-native-svg-15.8.0.tgz"
   integrity sha512-KHJzKpgOjwj1qeZzsBjxNdoIgv2zNCO9fVcoq2TEhTRsVV5DGTZ9JzUZwybd7q4giT/H3RdtqC3u44dWdO0Ffw==
@@ -6898,7 +6908,7 @@ react-shallow-renderer@^16.15.0:
     object-assign "^4.1.1"
     react-is "^16.12.0 || ^17.0.0 || ^18.0.0"
 
-react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.6.0 || ^17.0.0 || ^18.0.0", "react@^16.8 || ^17.0 || ^18.0", react@^18.0.0, react@^18.2.0, react@>=16.0, react@>=16.3.0, react@>=16.8, react@>=16.8.0, react@>=17.0.0, react@>=18.0.0, react@18.2.0:
+react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.5.1 || ^17.0.0 || ^18.0.0", "react@^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc", "react@^16.6.0 || ^17.0.0 || ^18.0.0", "react@^16.8 || ^17.0 || ^18.0", react@^18.0.0, react@^18.2.0, react@>=16.0, react@>=16.3.0, react@>=16.8, react@>=16.8.0, react@>=17.0.0, react@>=18.0.0, react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
