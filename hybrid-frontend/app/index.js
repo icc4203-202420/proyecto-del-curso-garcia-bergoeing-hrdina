@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler'; // Place this at the very top
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
+import { StatusBar } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { getItem } from "../util/Storage";
 import { navigationRef } from './navigation/navigationRef'; // Import navigationRef
@@ -38,11 +39,34 @@ const App = () => {
 
   return (
     <NavigationContainer ref={navigationRef} independent={true} linking={linking}>
-    <Stack.Navigator initialRouteName="Login">
-      <>
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="Main" component={AppTabs} />
+      <StatusBar barStyle="light-content" backgroundColor="#1F2937" />
+      <Stack.Navigator
+        initialRouteName={isAuthenticated ? "Main" : "Login"}
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#1F2937',
+          },
+          headerTintColor: '#FFA500',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      >
+        <Stack.Screen 
+          name="Login" 
+          component={Login} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="SignUp" 
+          component={SignUp} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Main" 
+          component={AppTabs} 
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="BeerDetails" component={BeerDetails} />
         <Stack.Screen name="BeerReviews" component={BeerReviews} />
         <Stack.Screen name="BarEvents" component={BarEvents} />
@@ -50,10 +74,9 @@ const App = () => {
         <Stack.Screen name="EventsGallery" component={EventsGallery} />
         <Stack.Screen name="SearchUser" component={SearchUser} />
         <Stack.Screen name="VideoPlayer" component={VideoPlayer} />
-      </>
-    </Stack.Navigator>
+      </Stack.Navigator>
     </NavigationContainer>
-  );
+  )
 };
 
 export default App;

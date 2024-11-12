@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { navigationRef } from '../navigation/navigationRef';
+import { Beer, Wine, User } from 'lucide-react-native';
 
 // Import your screens
 import UserHome from '../users/index.js';
@@ -18,19 +19,39 @@ const Stack = createStackNavigator();
 
 // Stack for Beer-related screens
 const BeerStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="BeerList" component={BeerList} />
-    <Stack.Screen name="BeerDetails" component={BeerDetails} />
+  <Stack.Navigator
+    screenOptions={{
+      headerStyle: {
+        backgroundColor: '#1F2937',
+      },
+      headerTintColor: '#FFA500',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    }}
+  >
+    <Stack.Screen name="BeerList" component={BeerList} options={{ title: 'Beers' }} />
+    <Stack.Screen name="BeerDetails" component={BeerDetails} options={{ title: 'Beer Details' }} />
   </Stack.Navigator>
-);
+)
 
 // Stack for Bar-related screens
-const BarStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="BarsList" component={BarsList} />
-    <Stack.Screen name="BarEvents" component={BarEvents} />
+const BarStack = () =>  (
+  <Stack.Navigator
+    screenOptions={{
+      headerStyle: {
+        backgroundColor: '#1F2937',
+      },
+      headerTintColor: '#FFA500',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    }}
+  >
+    <Stack.Screen name="BarsList" component={BarsList} options={{ title: 'Bars' }} />
+    <Stack.Screen name="BarEvents" component={BarEvents} options={{ title: 'Bar Events' }} />
   </Stack.Navigator>
-);
+)
 
 const AppTabs = () => {
   const navigation = useNavigation();
@@ -45,9 +66,12 @@ const AppTabs = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#6200ee',
-        tabBarInactiveTintColor: '#000',
-        tabBarStyle: { backgroundColor: '#fff' },
+        tabBarStyle: { 
+          backgroundColor: '#1F2937',
+          borderTopColor: '#374151',
+        },
+        tabBarActiveTintColor: '#FFA500',
+        tabBarInactiveTintColor: '#9CA3AF',
       }}
     >
       <Tab.Screen
@@ -55,7 +79,7 @@ const AppTabs = () => {
         component={BeerStack}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="beer" color={color} size={size} />
+            <Beer color={color} size={size} />
           ),
         }}
       />
@@ -64,21 +88,21 @@ const AppTabs = () => {
         component={BarStack}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="wine" color={color} size={size} />
+            <Wine color={color} size={size} />
           ),
         }}
       />
       <Tab.Screen
-        name="User"
+        name="Profile"
         component={UserHome}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" color={color} size={size} />
+            <User color={color} size={size} />
           ),
         }}
       />
     </Tab.Navigator>
-  );
+  )
 };
 
 export default AppTabs;
