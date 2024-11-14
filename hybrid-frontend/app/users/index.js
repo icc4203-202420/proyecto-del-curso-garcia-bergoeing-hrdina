@@ -44,11 +44,16 @@ const UserHome = () => {
     navigation.navigate('SearchUser'); // Navigate to the SearchUser screen
   };
 
+  const handleFeedNavigation = () => {
+    navigation.navigate('FeedUser'); 
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Welcome, {userName}!</Text>
       <Button title="Logout" onPress={handleLogout} disabled={loading} />
       <Button title="Friends" onPress={handleFriendsNavigation} disabled={loading} />
+      <Button title="Feed" onPress={handleFeedNavigation} disabled={loading} />
       {loading && <ActivityIndicator size="small" color="#0000ff" />}
     </View>
   );
