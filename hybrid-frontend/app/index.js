@@ -39,8 +39,8 @@ const App = () => {
   }, []);
 
   return (
-    <NavigationContainer ref={navigationRef} independent={true} linking={linking}>
-      <StatusBar barStyle="light-content" backgroundColor="#1F2937" />
+    <>
+      <StatusBar ref={navigationRef} linking={linking} barStyle="light-content" backgroundColor="#1F2937" />
       <Stack.Navigator
         initialRouteName={isAuthenticated ? "Main" : "Login"}
         screenOptions={{
@@ -77,7 +77,7 @@ const App = () => {
         <Stack.Screen name="VideoPlayer" component={VideoPlayer} />
         <Stack.Screen name="FeedUser" component={FeedUser} />
       </Stack.Navigator>
-    </NavigationContainer>
+    </>
   )
 };
 
