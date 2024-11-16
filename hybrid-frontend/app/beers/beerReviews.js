@@ -1,12 +1,12 @@
-import { NGROK_URL } from '@env';
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { getItem } from "../../util/Storage";
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import axios from 'axios';
-import StarRating from 'react-native-star-rating-widget';
+import React, { useState } from 'react'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
+import { useNavigation, useRoute } from '@react-navigation/native'
+import { Formik } from 'formik'
+import * as Yup from 'yup'
+import axios from 'axios'
+import { Star, Send } from 'lucide-react-native'
+import { getItem } from "../../util/Storage"
+import { NGROK_URL } from '@env'
 
 // Validation schema for the form
 const validationSchema = Yup.object().shape({
@@ -30,7 +30,7 @@ const BeerReviews = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     const userId = await getItem('user_id');
     values.user_id = userId;
-    values.rating = parseInt(rating);
+    values.rating = rating;
 
     try {
       await axios.post(
@@ -44,7 +44,7 @@ const BeerReviews = () => {
         }
       );
       setServerError('');
-      navigation.navigate('Main'); // Redirect to the home screen after a successful submission
+      navigation.goBack(); // Redirect to the home screen after a successful submission
     } catch (err) {
       console.log('Error:', err);
       if (err.response && err.response.status === 401) {
@@ -58,8 +58,12 @@ const BeerReviews = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Escribir una Reseña</Text>
+    <KeyboardAvoidingView 
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    style={styles.container}
+  >
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <Text style={styles.title}>Write a Review</Text>
       <Formik
         initialValues={{ text: '', rating: 0, user_id: '' }}
         validationSchema={validationSchema}
@@ -69,10 +73,10 @@ const BeerReviews = () => {
           <View style={styles.form}>
             <TextInput
               style={[styles.input, touched.text && errors.text ? styles.inputError : null]}
-              placeholder="Texto de la reseña"
-              placeholderTextColor="#aaa"
+              placeholder="Review text"
+              placeholderTextColor="#9CA3AF"
               multiline
-              numberOfLines={4}
+              numberOfLines={6}
               value={values.text}
               onChangeText={handleChange('text')}
             />
@@ -80,22 +84,37 @@ const BeerReviews = () => {
               <Text style={styles.errorText}>{errors.text}</Text>
             )}
 
-            <Text style={styles.label}>Calificación</Text>
-            <StarRating
-              rating={rating}
-              onChange={setRating}
-              starSize={30}
-              color="purple"
-              maxStars={5}
-            />
-
-            <View style={styles.buttonContainer}>
-              <Button
-                title={isSubmitting ? 'Enviando...' : 'Enviar Reseña'}
-                onPress={handleSubmit}
-                disabled={isSubmitting}
-              />
+            <Text style={styles.label}>Rating</Text>
+            <View style={styles.ratingContainer}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <TouchableOpacity
+                  key={star}
+                  onPress={() => setRating(star)}
+                  style={styles.starButton}
+                >
+                  <Star
+                    size={30}
+                    color={star <= rating ? "#FFA500" : "#9CA3AF"}
+                    fill={star <= rating ? "#FFA500" : "none"}
+                  />
+                </TouchableOpacity>
+              ))}
             </View>
+
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <>
+                  <Send size={20} color="#FFFFFF" />
+                  <Text style={styles.submitButtonText}>Submit Review</Text>
+                </>
+              )}
+            </TouchableOpacity>
 
             {serverError ? (
               <Text style={styles.errorText}>{serverError}</Text>
@@ -104,47 +123,78 @@ const BeerReviews = () => {
         )}
       </Formik>
     </ScrollView>
-  );
-};
+  </KeyboardAvoidingView>
+)
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 16,
-    backgroundColor: '#213547',
-    alignItems: 'center'
-  },
-  title: {
-    fontSize: 24,
-    color: 'white',
-    marginBottom: 16
-  },
-  form: {
-    width: '100%'
-  },
-  input: {
-    backgroundColor: '#333',
-    color: 'white',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10
-  },
-  inputError: {
-    borderColor: 'red',
-    borderWidth: 1
-  },
-  label: {
-    color: 'white',
-    marginBottom: 5
-  },
-  buttonContainer: {
-    marginTop: 20
-  },
-  errorText: {
-    color: 'red',
-    marginTop: 5,
-    textAlign: 'center'
-  }
-});
+container: {
+  flex: 1,
+  backgroundColor: '#1F2937',
+},
+scrollContainer: {
+  flexGrow: 1,
+  padding: 16,
+  alignItems: 'center',
+},
+title: {
+  fontSize: 24,
+  fontWeight: 'bold',
+  color: '#FFFFFF',
+  marginBottom: 24,
+},
+form: {
+  width: '100%',
+  maxWidth: 400,
+},
+input: {
+  backgroundColor: '#374151',
+  color: '#FFFFFF',
+  padding: 12,
+  borderRadius: 8,
+  marginBottom: 16,
+  fontSize: 16,
+  minHeight: 120,
+  textAlignVertical: 'top',
+},
+inputError: {
+  borderColor: '#EF4444',
+  borderWidth: 1,
+},
+label: {
+  color: '#FFFFFF',
+  marginBottom: 8,
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+ratingContainer: {
+  flexDirection: 'row',
+  justifyContent: 'center',
+  marginBottom: 24,
+},
+starButton: {
+  padding: 4,
+},
+submitButton: {
+  backgroundColor: '#FFA500',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 12,
+  borderRadius: 8,
+},
+submitButtonText: {
+  color: '#FFFFFF',
+  fontWeight: 'bold',
+  fontSize: 16,
+  marginLeft: 8,
+},
+errorText: {
+  color: '#EF4444',
+  marginTop: 4,
+  marginBottom: 16,
+  textAlign: 'center',
+},
+})
 
 export default BeerReviews;

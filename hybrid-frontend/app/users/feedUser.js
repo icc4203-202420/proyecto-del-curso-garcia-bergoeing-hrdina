@@ -1,123 +1,220 @@
+import { getItem } from "../../util/Storage";
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
-import { NGROK_URL } from '@env';
 import { useNavigation } from '@react-navigation/native';
+import { Calendar, Beer, Clock, User, Star } from 'lucide-react-native'
+import { View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
+import { NGROK_URL } from '@env';
 
 const FeedScreen = () => {
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchFeed = async () => {
-      try {
-        const token = await SecureStore.getItemAsync('authToken');
-        const userId = await SecureStore.getItemAsync('user_id'); // Asegura que aquí es 'user_id'
+  const fetchFeed = async () => {
+    try {
+      const token = await getItem('authToken');
+      const userId = await getItem('user_id'); // Ensure 'user_id' matches your key name
 
-        if (token && userId) {
-          // Realizar la llamada a la API para obtener el feed
-          const response = await fetch(`${NGROK_URL}/api/v1/feed?user_id=${userId}`, { // Cambia aquí a 'user_id'
-            method: 'GET',
-            headers: { Authorization: `Bearer ${token}` },
-          });
+      if (token && userId) {
+        // API call to fetch feed
+        const response = await fetch(`${NGROK_URL}/api/v1/feed?user_id=${userId}`, {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-          if (response.ok) {
-            const data = await response.json();
-            setFeed(data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
-          } else {
-            console.error('Error al obtener el feed');
-          }
+        if (response.ok) {
+          const data = await response.json();
+          setFeed(data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+        } else {
+          console.error('Error fetching feed');
         }
+      }
+    } catch (error) {
+      console.error('Error fetching feed:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false); // Stop the refresh spinner
+    }
+  };
 
-        // Conexión al WebSocket para actualizaciones en tiempo real
-        const socket = new WebSocket(`${NGROK_URL.replace('http', 'ws')}/cable`);
-        socket.onopen = () => {
-          console.log('Conectado al WebSocket');
-          socket.send(JSON.stringify({
+  useEffect(() => {
+    const initializeFeedAndSocket = async () => {
+      await fetchFeed(); // Fetch the feed on component mount
+  
+      // WebSocket connection for real-time updates
+      const userId = await getItem('user_id'); // Get user_id outside WebSocket initialization
+      const socket = new WebSocket(`${NGROK_URL.replace('http', 'ws')}/cable`);
+      socket.onopen = () => {
+        console.log('Connected to WebSocket');
+        socket.send(
+          JSON.stringify({
             command: 'subscribe',
             identifier: JSON.stringify({
               channel: 'FeedChannel',
-              user_id: userId  // Asegúrate de que aquí es 'user_id'
-            })
-          }));
-        };
-
-        socket.onmessage = (e) => {
-          const data = JSON.parse(e.data);
-          if (data.message && data.message.type === 'new_feed_item') {
-            fetchFeed();  // Refresca el feed cuando llegue un nuevo item
-          }
-        };
-
-        socket.onerror = (e) => {
-          console.error('Error en WebSocket:', e);
-        };
-
-        socket.onclose = (e) => {
-          console.log('WebSocket cerrado:', e);
-        };
-
-        return () => {
-          socket.close();
-        };
-      } catch (error) {
-        console.error('Error al obtener el feed:', error);
-      } finally {
-        setLoading(false);
-      }
+              user_id: userId, // Use the retrieved user_id
+            }),
+          })
+        );
+      };
+  
+      socket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if (data.message && data.message.type === 'new_feed_item') {
+          fetchFeed(); // Refresh the feed when a new item is received
+        }
+      };
+  
+      socket.onerror = (e) => {
+        console.error('WebSocket error:', e);
+      };
+  
+      socket.onclose = (e) => {
+        console.log('WebSocket closed:', e);
+      };
+  
+      // Clean up on component unmount
+      return () => {
+        socket.close();
+      };
     };
+  
+    initializeFeedAndSocket(); // Call the async function
+  }, []); // Dependency array ensures this runs once on mount
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
     fetchFeed();
   }, []);
 
+  const renderFeedItem = ({ item }) => {
+    const formattedDate = new Date(item.created_at).toLocaleString();
+
+    return (
+      <View style={styles.post}>
+        {item.type === 'event_picture' && (
+          <TouchableOpacity onPress={() => navigation.navigate('EventsGallery', { event_id: item.event_id })}>
+            <Text style={styles.title}>{item.event_name || 'Unnamed Event'}</Text>
+            <View style={styles.userInfo}>
+              <User size={16} color="#9CA3AF" />
+              <Text style={styles.userName}>{item.user_name}</Text>
+            </View>
+            {item.image_url && <Image source={{ uri: item.image_url }} style={styles.image} />}
+            <Text style={styles.description}>{item.description}</Text>
+            <View style={styles.dateContainer}>
+              <Calendar size={16} color="#9CA3AF" />
+              <Text style={styles.date}>{formattedDate}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+
+        {item.type === 'beer_review' && (
+          <TouchableOpacity onPress={() => navigation.navigate('BeerDetails', { beerId: item.beer_id })}>
+            <Text style={styles.title}>{item.beer_name || 'Unnamed Beer'}</Text>
+            <View style={styles.userInfo}>
+              <User size={16} color="#9CA3AF" />
+              <Text style={styles.userName}>{item.user_name}</Text>
+            </View>
+            <View style={styles.ratingContainer}>
+              <Star size={16} color="#FFA500" />
+              <Text style={styles.rating}>{item.rating}</Text>
+            </View>
+            <Text style={styles.description}>{item.review_text}</Text>
+            <View style={styles.dateContainer}>
+              <Clock size={16} color="#9CA3AF" />
+              <Text style={styles.date}>{formattedDate}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+      </View>
+    )
+  }
+
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFA500" />
+      </View>
+    )
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {feed.map((post, index) => {
-        const formattedDate = new Date(post.created_at);
-        const date = isNaN(formattedDate) ? 'Fecha no válida' : formattedDate.toLocaleString();
-
-        return (
-          <View key={index} style={styles.post}>
-            {/* Mostrar publicaciones de eventos */}
-            {post.type === 'event_picture' && (
-              <TouchableOpacity onPress={() => navigation.navigate('EventsGallery', { event_id: post.event_id })}>
-                <Text style={styles.title}>{post.event_name || 'Sin nombre'}</Text>
-                <Text>Publicado por: {post.user_name}</Text>
-                <Image source={{ uri: post.image_url }} style={styles.image} />
-                <Text>{post.description}</Text>
-                <Text style={styles.date}>Fecha: {date}</Text>
-              </TouchableOpacity>
-            )}
-
-            {/* Mostrar reviews de cervezas */}
-            {post.type === 'beer_review' && (
-              <TouchableOpacity onPress={() => navigation.navigate('BeerDetails', { beerId: post.beer_id })}>
-                <Text style={styles.title}>{post.beer_name || 'Sin nombre de cerveza'}</Text>
-                <Text>Review por: {post.user_name}</Text>
-                <Text style={styles.rating}>Rating: {post.rating}</Text>
-                <Text>{post.review_text}</Text>
-                <Text style={styles.date}>Fecha: {date}</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        );
-      })}
-    </ScrollView>
-  );
-};
+    <FlatList
+      data={feed}
+      renderItem={renderFeedItem}
+      keyExtractor={(item, index) => item.id || index.toString()}
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFA500" />
+      }
+    />
+  )
+}
 
 const styles = StyleSheet.create({
-  container: { padding: 10 },
-  post: { marginBottom: 15, padding: 10, backgroundColor: '#f0f0f0', borderRadius: 5 },
-  title: { fontSize: 18, fontWeight: 'bold' },
-  image: { width: '100%', height: 200, borderRadius: 5, marginBottom: 10 },
-  rating: { color: '#ff9900', fontWeight: 'bold' },
-  date: { color: '#888', marginTop: 5 },
-});
+  container: {
+    padding: 16,
+    backgroundColor: '#1F2937',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1F2937',
+  },
+  post: {
+    marginBottom: 16,
+    padding: 16,
+    backgroundColor: '#374151',
+    borderRadius: 12,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 8,
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  userName: {
+    color: '#9CA3AF',
+    marginLeft: 4,
+    fontSize: 14,
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  description: {
+    color: '#D1D5DB',
+    marginBottom: 8,
+    fontSize: 16,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  rating: {
+    color: '#FFA500',
+    fontWeight: 'bold',
+    marginLeft: 4,
+    fontSize: 16,
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  date: {
+    color: '#9CA3AF',
+    marginLeft: 4,
+    fontSize: 12,
+  },
+})
 
 export default FeedScreen;
