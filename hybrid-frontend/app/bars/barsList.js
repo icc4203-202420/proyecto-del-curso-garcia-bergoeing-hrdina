@@ -1,57 +1,85 @@
-import { NGROK_URL } from '@env';
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Search, MapPin, Calendar } from 'lucide-react-native'
-import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react'
+import { View, Text, TextInput, FlatList, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import axios from 'axios'
+import { Search, MapPin, Calendar, Beer } from 'lucide-react-native'
+import { NGROK_URL } from '@env'
 
 const BarList = () => {
   const [bars, setBars] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true)
   const navigation = useNavigation();
 
   useEffect(() => {
-    axios.get(`${NGROK_URL}/api/v1/bars`)
-      .then(response => setBars(response.data.bars))
-      .catch(error => console.error('Error fetching bars:', error));
-  }, []);
+    fetchBars()
+  }, [])
+
+  const fetchBars = async () => {
+    try {
+      const response = await axios.get(`${NGROK_URL}/api/v1/bars`)
+      setBars(response.data.bars)
+    } catch (error) {
+      console.error('Error fetching bars:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filteredBars = bars.filter(bar =>
     bar.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const renderBarItem = ({ item }) => (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('BarEvents', { barId: item.id })}
+    >
       {item.image_url ? (
         <Image
           source={{ uri: item.image_url }}
           style={styles.image}
-          resizeMode="contain"
+          resizeMode="cover"
         />
-      ) : null}
+      ) : (
+        <View style={[styles.image, styles.placeholderImage]}>
+          <Beer size={48} color="#9CA3AF" />
+        </View>
+      )}
       <View style={styles.cardContent}>
         <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.subtitle}>Latitude: {item.latitude}</Text>
-        <Text style={styles.subtitle}>Longitude: {item.longitude}</Text>
         {item.address && (
-          <Text style={styles.subtitle}>
-            Address: {item.address.line1}, {item.address.city}
-          </Text>
+          <View style={styles.infoRow}>
+            <MapPin size={16} color="#9CA3AF" />
+            <Text style={styles.subtitle}>
+              {item.address.line1}, {item.address.city}
+            </Text>
+          </View>
         )}
-      </View>
-      <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.button}
+          style={styles.eventsButton}
           onPress={() => navigation.navigate('BarEvents', { barId: item.id })}
         >
-          <Text style={styles.buttonText}>View Events</Text>
+          <Calendar size={16} color="#FFFFFF" />
+          <Text style={styles.eventsButtonText}>View Events</Text>
         </TouchableOpacity>
       </View>
-    </View>
-  );
+    </TouchableOpacity>
+  )
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFA500" />
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Bar List</Text>
+      </View>
       <View style={styles.searchContainer}>
         <Search size={20} color="#9CA3AF" style={styles.searchIcon} />
         <TextInput
@@ -73,82 +101,91 @@ const BarList = () => {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+  container: {
+    flex: 1,
+    backgroundColor: '#1F2937',
   },
-  image: {
-    width: 100,
-    height: 100,
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
+  header: {
+    backgroundColor: '#374151',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#4B5563',
   },
-  placeholderImage: {
-    width: 100,
-    height: 100,
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFA500',
+    textAlign: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#E5E5E5',
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
+    backgroundColor: '#1F2937',
   },
-  placeholderText: {
-    fontSize: 32,
-    fontWeight: 'bold',
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#374151',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    margin: 16,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    height: 40,
     color: '#FFFFFF',
+    fontSize: 16,
+  },
+  list: {
+    padding: 16,
+  },
+  card: {
+    backgroundColor: '#374151',
+    borderRadius: 12,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: 150,
+  },
+  placeholderImage: {
+    backgroundColor: '#4B5563',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardContent: {
-    flex: 1,
-    padding: 12,
-    justifyContent: 'center',
+    padding: 16,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#555',
+    color: '#FFFFFF',
+    marginBottom: 8,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
+    marginBottom: 8,
   },
-  buttonContainer: {
-    padding: 10,
-  },
-  button: {
-    backgroundColor: '#FFA500',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 4,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#fff',
+  subtitle: {
     fontSize: 14,
-    fontWeight: '600',
+    color: '#9CA3AF',
+    marginLeft: 4,
   },
   eventsButton: {
     flexDirection: 'row',
-    backgroundColor: '#34D399',
     alignItems: 'center',
+    backgroundColor: '#FFA500',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 6,
-    marginTop: 10,
+    alignSelf: 'flex-start',
   },
   eventsButtonText: {
     color: '#FFFFFF',
@@ -156,13 +193,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 6,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F7FAFC',
-  },
-});
-
-
+})
 export default BarList;

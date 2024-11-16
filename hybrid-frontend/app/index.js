@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler'; // Place this at the very top
-import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';

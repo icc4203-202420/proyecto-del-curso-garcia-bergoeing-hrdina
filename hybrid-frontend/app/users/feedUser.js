@@ -139,22 +139,40 @@ const FeedScreen = () => {
   }
 
   return (
-    <FlatList
-      data={feed}
-      renderItem={renderFeedItem}
-      keyExtractor={(item, index) => item.id || index.toString()}
-      contentContainerStyle={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFA500" />
-      }
-    />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Feed</Text>
+      </View>
+      <FlatList
+        data={feed}
+        renderItem={renderFeedItem}
+        keyExtractor={(item, index) => item.id || index.toString()}
+        contentContainerStyle={styles.feedContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFA500" />
+        }
+      />
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    flex: 1,
     backgroundColor: '#1F2937',
+  },
+  header: {
+    backgroundColor: '#374151',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#4B5563',
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFA500',
+    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,
@@ -162,11 +180,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#1F2937',
   },
-  post: {
-    marginBottom: 16,
+  feedContainer: {
     padding: 16,
+  },
+  post: {
     backgroundColor: '#374151',
     borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
   },
   title: {
     fontSize: 18,
