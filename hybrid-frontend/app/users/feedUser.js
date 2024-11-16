@@ -85,7 +85,7 @@ const FeedScreen = () => {
           <View key={index} style={styles.post}>
             {/* Mostrar publicaciones de eventos */}
             {post.type === 'event_picture' && (
-              <TouchableOpacity onPress={() => navigation.navigate('EventBar', { id: post.bar_id, featured_event_id: post.event_id })}>
+              <TouchableOpacity onPress={() => navigation.navigate('EventsGallery', { event_id: post.event_id })}>
                 <Text style={styles.title}>{post.event_name || 'Sin nombre'}</Text>
                 <Text>Publicado por: {post.user_name}</Text>
                 <Image source={{ uri: post.image_url }} style={styles.image} />
@@ -96,7 +96,7 @@ const FeedScreen = () => {
 
             {/* Mostrar reviews de cervezas */}
             {post.type === 'beer_review' && (
-              <TouchableOpacity onPress={() => navigation.navigate('BeerDetail', { beerId: post.beer_id })}>
+              <TouchableOpacity onPress={() => navigation.navigate('BeerDetails', { beerId: post.beer_id })}>
                 <Text style={styles.title}>{post.beer_name || 'Sin nombre de cerveza'}</Text>
                 <Text>Review por: {post.user_name}</Text>
                 <Text style={styles.rating}>Rating: {post.rating}</Text>
