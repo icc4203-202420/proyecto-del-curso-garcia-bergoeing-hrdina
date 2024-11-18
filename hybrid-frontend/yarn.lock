@@ -1947,11 +1947,11 @@
     nullthrows "^1.1.1"
 
 "@react-navigation/bottom-tabs@^7.0.0", "@react-navigation/bottom-tabs@^7.0.4":
-  version "7.0.4"
-  resolved "https://registry.npmjs.org/@react-navigation/bottom-tabs/-/bottom-tabs-7.0.4.tgz"
-  integrity sha512-eYeuQ/hlpa9NtkCh38xAFID7iMAcLs5ZR2DgKU/U5hxIv9mEXrjxUgCenGQwKZhIIWA32c1rnsyQFPjhmyTO/A==
+  version "7.0.5"
+  resolved "https://registry.npmjs.org/@react-navigation/bottom-tabs/-/bottom-tabs-7.0.5.tgz"
+  integrity sha512-REfrRfzpyTiJjdcOBtXec75V9nO61vHD/pa4Q5OBtPUt4FQ7SYE73E0IEiXQutWxWbMD2B+iJGTR3n81XvLeHQ==
   dependencies:
-    "@react-navigation/elements" "^2.0.3"
+    "@react-navigation/elements" "^2.0.4"
     color "^4.2.3"
 
 "@react-navigation/core@^7.0.3":
@@ -1967,19 +1967,19 @@
     use-latest-callback "^0.2.1"
     use-sync-external-store "^1.2.2"
 
-"@react-navigation/elements@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/@react-navigation/elements/-/elements-2.0.3.tgz"
-  integrity sha512-vrfEmXnYNv1qTUTEAup5ycsd2rQirvZx/5620qeWHMSykqblo0imtk0LoLNsuimrUfDSsrjCckux3/atX2jAMg==
+"@react-navigation/elements@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/@react-navigation/elements/-/elements-2.0.4.tgz"
+  integrity sha512-t6+5MxPprpipm5cH8yqfi6OXUpoNujGYmgLtYgvEqCcPFqPcCOnwpm2QBYFW2WWG4ghdCSsv02S26Bf9cmpKvg==
   dependencies:
     color "^4.2.3"
 
 "@react-navigation/native-stack@^7.0.0":
-  version "7.0.3"
-  resolved "https://registry.npmjs.org/@react-navigation/native-stack/-/native-stack-7.0.3.tgz"
-  integrity sha512-375n9YQ+9DzwlAsW5Jb1PBiT3maXVb8ux/y4tpGikfBM/Vh19OQ2oGNSu0wl8rujiM/MZVkWS9ZIc8IEKd0kWg==
+  version "7.0.4"
+  resolved "https://registry.npmjs.org/@react-navigation/native-stack/-/native-stack-7.0.4.tgz"
+  integrity sha512-xyQqv6+qtmOpgI543sRv2/L94VCSdzy83o8YJZS89Iqb1FQ3HbqUlAbMgE5HBiqQpAN3IPUp6GDuCn4pXyLcyA==
   dependencies:
-    "@react-navigation/elements" "^2.0.3"
+    "@react-navigation/elements" "^2.0.4"
     warn-once "^0.1.1"
 
 "@react-navigation/native@^7.0.0", "@react-navigation/native@^7.0.3":
@@ -2001,11 +2001,11 @@
     nanoid "3.3.7"
 
 "@react-navigation/stack@^7.0.3":
-  version "7.0.3"
-  resolved "https://registry.npmjs.org/@react-navigation/stack/-/stack-7.0.3.tgz"
-  integrity sha512-NO0urYXfMdcM5O9lnsNMCJBIdYktGaSQIoIKq10x0avQGNeh6yxo3qC2QxUhN2ycdgAya2F4/zRjA3wBcWFUyA==
+  version "7.0.4"
+  resolved "https://registry.npmjs.org/@react-navigation/stack/-/stack-7.0.4.tgz"
+  integrity sha512-ubCx5BX6FIHRAiHxWG7sOjz+Fg+mrm6hlkvb+jfWrRfeDG30G2W3I0g/xRh1d29TwEJXdFmtB2NYaSG5lKqz5g==
   dependencies:
-    "@react-navigation/elements" "^2.0.3"
+    "@react-navigation/elements" "^2.0.4"
     color "^4.2.3"
 
 "@remix-run/node@^2.12.0":
@@ -3169,9 +3169,9 @@ cross-fetch@^3.1.5:
     node-fetch "^2.6.12"
 
 cross-spawn@^6.0.0:
-  version "6.0.5"
-  resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-6.0.5.tgz"
-  integrity sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==
+  version "6.0.6"
+  resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-6.0.6.tgz"
+  integrity sha512-VqCUuhcd1iB+dsv8gxPttb5iZh/D0iubSP21g36KXdEuf6I5JiioesUVjpCdHV9MZRUfVFlvwtIUyPfxo5trtw==
   dependencies:
     nice-try "^1.0.4"
     path-key "^2.0.1"
@@ -3180,9 +3180,9 @@ cross-spawn@^6.0.0:
     which "^1.2.9"
 
 cross-spawn@^7.0.0, cross-spawn@^7.0.3:
-  version "7.0.5"
-  resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.5.tgz"
-  integrity sha512-ZVJrKKYunU38/76t0RMOulHOnUcbU9GbpWKAOZ0mhjr7CX6FVrH+4FrAapSOekrgFQ3f/8gwMEuIft0aKq6Hug==
+  version "7.0.6"
+  resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.6.tgz"
+  integrity sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==
   dependencies:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
@@ -5938,9 +5938,9 @@ qrcode-terminal@0.11.0:
   integrity sha512-Uu7ii+FQy4Qf82G4xu7ShHhjhGahEpCWc3x8UavY3CTcWV+ufmmCtwkr7ZKsX42jdL0kr1B5FKUeqJvAn51jzQ==
 
 qs@^6.13.0:
-  version "6.13.0"
-  resolved "https://registry.npmjs.org/qs/-/qs-6.13.0.tgz"
-  integrity sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==
+  version "6.13.1"
+  resolved "https://registry.npmjs.org/qs/-/qs-6.13.1.tgz"
+  integrity sha512-EJPeIn0CYrGu+hli1xilKAPXODtJ12T0sP63Ijx2/khC2JtuaN3JyNIpvmnkmaEtha9ocbG4A4cMcr+TvqvwQg==
   dependencies:
     side-channel "^1.0.6"
 
@@ -6033,17 +6033,17 @@ react-helmet-async@^1.3.0:
     react-fast-compare "^3.2.0"
     shallowequal "^1.1.0"
 
-react-is@^16.13.1, react-is@^16.7.0:
+react-is@^16.13.1:
   version "16.13.1"
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-is@^18.0.0:
-  version "18.3.1"
-  resolved "https://registry.npmjs.org/react-is/-/react-is-18.3.1.tgz"
-  integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
+react-is@^16.7.0:
+  version "16.13.1"
+  resolved "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
+  integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-is@^18.2.0:
+react-is@^18.0.0, react-is@^18.2.0:
   version "18.3.1"
   resolved "https://registry.npmjs.org/react-is/-/react-is-18.3.1.tgz"
   integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
@@ -6078,9 +6078,9 @@ react-native-feather@^1.1.2:
   integrity sha512-qBc0+XegKkX4JV6ykgScasguEV3RdlbYp9IrCMnbozngOgJ7vi76pyRpb+dnZ1AZVkYsbYnpdA9JXeP7EJbMCA==
 
 react-native-gesture-handler@^2.21.0, "react-native-gesture-handler@>= 2.0.0":
-  version "2.21.0"
-  resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.21.0.tgz"
-  integrity sha512-8fR1a8EX1aP+TFGiF8pP3UJks2CcfEu7WZzctkJg1yu2DtbVu+uJB/kAPS1XuZxFBKn7pyJcwuQhzuhilzK4DA==
+  version "2.21.1"
+  resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.21.1.tgz"
+  integrity sha512-KT19IvAP2nto/9WhDlZ6u62utOvi72VhR1PgqB3zDIiBdRDCPrLCYRduxfz6q8VuCIyzWAcuOh8vas7zmO5Y1w==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"

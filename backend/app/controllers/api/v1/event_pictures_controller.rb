@@ -6,8 +6,12 @@ class API::V1::EventPicturesController < ApplicationController
     Rails.logger.debug params
     @event_picture = @event.event_pictures.new(event_picture_params)
     @event_picture.user = User.find(params["user_id"].to_i)
+    
 
     if @event_picture.save
+      tagged_handles = extract_handles(@event_picture.description)
+      notify_tagged_users(tagged_handles)
+
       # Find list of friends and people in the same bar's event
       friend_ids = @event_picture.user.friends.pluck(:id)
       event_participant_ids = @event.attendances.pluck(:user_id) # Assuming `@event` has a `participants` association
@@ -54,4 +58,23 @@ end
   def event_picture_params
     params.require(:event_picture).permit(:image, :description)
   end
+
+  def extract_handles(description)
+    description.scan(/@\w+/).map { |handle| handle.delete('@') }
+  end
+  
+  def notify_tagged_users(handles)
+    users = User.where(handle: handles)
+    users.each do |user|
+      if user.push_token.present?
+        PushNotificationService.send_notification(
+          to: user.push_token,
+          title: "¡Fuiste etiquetado en una foto!",
+          body: "El usuario #{@event_picture.user.handle} te ha etiquetado en una foto del evento.",
+          data: { screen: "EventGallery", event_id: @event.id }
+        )
+      end
+    end
+  end
+
 end
