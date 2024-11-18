@@ -3,35 +3,36 @@ class API::V1::FeedController < ApplicationController
 
   def index
     friend_ids = get_friend_ids(params[:friend_id])
-    user_ids = params[:friend_id].present? ? friend_ids : [@current_user.id, *friend_ids]
-
-    # Obtener las publicaciones relacionadas
+    # Fetch user IDs to include in the feed
+    user_ids = params[:friend_id].present? ? friend_ids : [*friend_ids]
+  
+    # Retrieve related posts, excluding those created by the current user
     event_pictures = if params[:beer_id].present?
-      Review.none
+      EventPicture.none
     else
       EventPicture.includes(:event, :user)
-                                 .where(user_id: user_ids)
-                                 .order(created_at: :desc)
+                  .where(user_id: user_ids)
+                  .where.not(user_id: @current_user.id) # Exclude the current user's posts
+                  .order(created_at: :desc)
     end
-
-    # Si se filtra por bar_id, no incluir reseñas
+  
     reviews = if params[:bar_id].present?
-      Review.none # Devuelve una relación vacía que permite usar métodos como `where`
+      Review.none
     else
       Review.includes(:user, :beer)
             .where(user_id: user_ids)
+            .where.not(user_id: @current_user.id) # Exclude the current user's reviews
             .order(created_at: :desc)
     end
-
-
-    # Filtrar publicaciones
+  
+    # Filter posts based on provided parameters
     event_pictures = filter_event_pictures(event_pictures)
     reviews = reviews.where(beer_id: params[:beer_id]) if params[:beer_id].present?
-
-    # Construir y ordenar el feed
+  
+    # Build and sort the feed
     feed = build_feed(event_pictures, reviews)
     feed.sort_by! { |post| post[:created_at] }.reverse!
-
+  
     render json: feed
   end
 

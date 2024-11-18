@@ -1,6 +1,7 @@
 class FeedChannel < ApplicationCable::Channel
   def subscribed
-    stream_from "feed_#{params[:user_id]}"
+    user_id = params['user_id']
+    stream_from "feed_#{user_id}" if user_id
   end
 
   def unsubscribed
